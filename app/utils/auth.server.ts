@@ -1,5 +1,5 @@
 import { type Connection, type Password, type User } from '@prisma/client'
-import { redirect } from '@remix-run/node'
+import { json, redirect } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
 import { Authenticator } from 'remix-auth'
 import { safeRedirect } from 'remix-utils/safe-redirect'
@@ -8,6 +8,7 @@ import { prisma } from './db.server.ts'
 import { combineHeaders, downloadFile } from './misc.tsx'
 import { type ProviderUser } from './providers/provider.ts'
 import { authSessionStorage } from './session.server.ts'
+import { tr } from '@faker-js/faker'
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30
 export const getSessionExpirationDate = () =>
@@ -71,13 +72,13 @@ export async function requireAnonymous(request: Request) {
 }
 
 export async function login({
-	username,
+	email,
 	password,
 }: {
-	username: User['username']
+	email: User['email']
 	password: string
 }) {
-	const user = await verifyUserPassword({ username }, password)
+	const user = await verifyUserPassword({ email }, password)
 	if (!user) return null
 	const session = await prisma.session.create({
 		select: { id: true, expirationDate: true, userId: true },
@@ -217,24 +218,53 @@ export async function getPasswordHash(password: string) {
 	return hash
 }
 
+type GetTokenResponse = {
+	access_token: string
+}
+
 export async function verifyUserPassword(
-	where: Pick<User, 'username'> | Pick<User, 'id'>,
+	where: Pick<User, 'email'>,
 	password: Password['hash'],
 ) {
-	const userWithPassword = await prisma.user.findUnique({
-		where,
-		select: { id: true, password: { select: { hash: true } } },
-	})
-
-	if (!userWithPassword || !userWithPassword.password) {
+	const apiUrl = 'http://localhost:8090/v1/auth/get-token'
+	let res
+	try {
+		res = await fetch(apiUrl, {
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			method: 'POST',
+			body: JSON.stringify({
+				email: where.email,
+				password,
+			}),
+		})
+	} catch (error) {
 		return null
 	}
 
-	const isValid = await bcrypt.compare(password, userWithPassword.password.hash)
-
-	if (!isValid) {
+	const data = (await res.json()) as GetTokenResponse
+	if (!data || !data.access_token) {
 		return null
 	}
 
-	return { id: userWithPassword.id }
+	let user
+
+	try {
+		user = await prisma.user.findUniqueOrThrow({
+			where,
+			select: { id: true },
+		})
+	} catch (error) {
+		user = await prisma.user.create({
+			data: {
+				email: where.email,
+				username: where.email,
+			},
+			select: { id: true },
+		})
+	}
+
+	return { id: user.id }
 }
