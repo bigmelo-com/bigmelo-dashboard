@@ -20,11 +20,11 @@ import {
 } from '#app/utils/connections.tsx'
 import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
-import { PasswordSchema, UsernameSchema } from '#app/utils/user-validation.ts'
+import { EmailSchema, PasswordSchema } from '#app/utils/user-validation.ts'
 import { handleNewSession } from './login.server.ts'
 
 const LoginFormSchema = z.object({
-	username: UsernameSchema,
+	email: EmailSchema,
 	password: PasswordSchema,
 	redirectTo: z.string().optional(),
 	remember: z.boolean().optional(),
@@ -110,12 +110,12 @@ export default function LoginPage() {
 							<Field
 								labelProps={{ children: 'Username' }}
 								inputProps={{
-									...getInputProps(fields.username, { type: 'text' }),
+									...getInputProps(fields.email, { type: 'text' }),
 									autoFocus: true,
 									className: 'lowercase',
 									autoComplete: 'username',
 								}}
-								errors={fields.username.errors}
+								errors={fields.email.errors}
 							/>
 
 							<Field
