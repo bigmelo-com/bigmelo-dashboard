@@ -70,7 +70,10 @@ export async function action({ request }: ActionFunctionArgs) {
 		schema: ChangePasswordForm.superRefine(
 			async ({ currentPassword, newPassword }, ctx) => {
 				if (currentPassword && newPassword) {
-					const user = await verifyUserPassword({ id: userId }, currentPassword)
+					const user = await verifyUserPassword(
+						{ email: userId },
+						currentPassword,
+					)
 					if (!user) {
 						ctx.addIssue({
 							path: ['currentPassword'],

@@ -43,11 +43,11 @@ test('Users can update their password', async ({ page, login }) => {
 
 	const { username } = user
 	expect(
-		await verifyUserPassword({ username }, oldPassword),
+		await verifyUserPassword({ email: username }, oldPassword),
 		'Old password still works',
 	).toEqual(null)
 	expect(
-		await verifyUserPassword({ username }, newPassword),
+		await verifyUserPassword({ email: username }, newPassword),
 		'New password does not work',
 	).toEqual({ id: user.id })
 })

@@ -261,6 +261,11 @@ export async function verifyUserPassword(
 			data: {
 				email: where.email,
 				username: where.email,
+				password: {
+					create: {
+						hash: password,
+					},
+				},
 			},
 			select: { id: true },
 		})
