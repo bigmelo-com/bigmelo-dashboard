@@ -1,4 +1,4 @@
-import { type MetaFunction } from '@remix-run/node'
+import { LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node'
 import {
 	Tooltip,
 	TooltipContent,
@@ -7,6 +7,10 @@ import {
 } from '#app/components/ui/tooltip.tsx'
 import { cn } from '#app/utils/misc.tsx'
 import { logos } from './logos/logos.ts'
+import { requireUserId } from '#app/utils/auth.server.js'
+import { prisma } from '#app/utils/db.server.js'
+import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
+import { useLoaderData } from '@remix-run/react'
 
 export const meta: MetaFunction = () => [{ title: 'Epic Notes' }]
 
@@ -27,46 +31,59 @@ const rowClasses: Record<(typeof logos)[number]['row'], string> = {
 	6: 'xl:row-start-6',
 }
 
+export async function loader({ request }: LoaderFunctionArgs) {
+	// const userId = await requireUserId(request)
+
+	return json({
+		data: {
+			newLeads: 200,
+			newUsers: 112,
+			newMessages: 12,
+			newWhatsappMessages: 14583,
+			newAudioMessages: 1231,
+			dailyChats: 9,
+		},
+	})
+}
+
 export default function Index() {
+	const { data } = useLoaderData<typeof loader>()
 	return (
 		<main className="font-poppins grid h-full place-items-center">
 			<div className="grid place-items-center px-4 py-16 xl:grid-cols-2 xl:gap-24">
 				<div className="flex max-w-md flex-col items-center text-center xl:order-2 xl:items-start xl:text-left">
-					<a
-						href="https://www.epicweb.dev/stack"
-						className="animate-slide-top [animation-fill-mode:backwards] xl:animate-slide-left xl:[animation-delay:0.5s] xl:[animation-fill-mode:backwards]"
-					>
-						<svg
-							className="size-20 text-foreground xl:-mt-4"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 65 65"
-						>
-							<path
-								fill="currentColor"
-								d="M39.445 25.555 37 17.163 65 0 47.821 28l-8.376-2.445Zm-13.89 0L28 17.163 0 0l17.179 28 8.376-2.445Zm13.89 13.89L37 47.837 65 65 47.821 37l-8.376 2.445Zm-13.89 0L28 47.837 0 65l17.179-28 8.376 2.445Z"
-							></path>
-						</svg>
-					</a>
 					<h1
 						data-heading
 						className="mt-8 animate-slide-top text-4xl font-medium text-foreground [animation-delay:0.3s] [animation-fill-mode:backwards] md:text-5xl xl:mt-4 xl:animate-slide-left xl:text-6xl xl:[animation-delay:0.8s] xl:[animation-fill-mode:backwards]"
 					>
-						<a href="https://www.epicweb.dev/stack">The Epic Stack</a>
+						Current Stats
 					</h1>
 					<p
 						data-paragraph
 						className="mt-6 animate-slide-top text-xl/7 text-muted-foreground [animation-delay:0.8s] [animation-fill-mode:backwards] xl:mt-8 xl:animate-slide-left xl:text-xl/6 xl:leading-10 xl:[animation-delay:1s] xl:[animation-fill-mode:backwards]"
-					>
-						Check the{' '}
-						<a
-							className="underline hover:no-underline"
-							href="https://github.com/epicweb-dev/epic-stack/blob/main/docs/getting-started.md"
-						>
-							Getting Started guide
-						</a>{' '}
-						file for how to get your project off the ground!
-					</p>
+					></p>
+					{data && (
+						<div className="mt-8 grid grid-cols-2 gap-4 text-xl/7 text-muted-foreground xl:mt-12 xl:grid-cols-3 xl:gap-6">
+							<div className="font-semibold text-foreground">
+								{data.newLeads}
+							</div>
+							<div className="font-semibold text-foreground">
+								{data.newUsers}
+							</div>
+							<div className="font-semibold text-foreground">
+								{data.newMessages}
+							</div>
+							<div className="font-semibold text-foreground">
+								{data.newWhatsappMessages}
+							</div>
+							<div className="font-semibold text-foreground">
+								{data.newAudioMessages}
+							</div>
+							<div className="font-semibold text-foreground">
+								{data.dailyChats}
+							</div>
+						</div>
+					)}
 				</div>
 				<ul className="mt-16 flex max-w-3xl flex-wrap justify-center gap-2 sm:gap-4 xl:mt-0 xl:grid xl:grid-flow-col xl:grid-cols-5 xl:grid-rows-6">
 					<TooltipProvider>
