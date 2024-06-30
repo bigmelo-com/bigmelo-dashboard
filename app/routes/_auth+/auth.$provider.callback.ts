@@ -1,4 +1,5 @@
 import { redirect, type LoaderFunctionArgs } from '@remix-run/node'
+import bcrypt from 'bcryptjs'
 import {
 	authenticator,
 	getSessionExpirationDate,
@@ -179,6 +180,7 @@ async function makeSession(
 		data: {
 			expirationDate: getSessionExpirationDate(),
 			userId,
+			accessToken: await bcrypt.hash(userId, 10), // TODO use a real token
 		},
 	})
 	return handleNewSession(

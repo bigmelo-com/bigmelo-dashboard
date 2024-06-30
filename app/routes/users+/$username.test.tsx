@@ -50,6 +50,7 @@ test('The user profile when logged in as self', async () => {
 		data: {
 			expirationDate: getSessionExpirationDate(),
 			userId: user.id,
+			accessToken: faker.string.uuid(),
 		},
 	})
 

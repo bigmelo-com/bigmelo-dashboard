@@ -1,5 +1,5 @@
 import { type Connection, type Password, type User } from '@prisma/client'
-import { json, redirect } from '@remix-run/node'
+import { redirect } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
 import { Authenticator } from 'remix-auth'
 import { safeRedirect } from 'remix-utils/safe-redirect'
@@ -8,7 +8,6 @@ import { prisma } from './db.server.ts'
 import { combineHeaders, downloadFile } from './misc.tsx'
 import { type ProviderUser } from './providers/provider.ts'
 import { authSessionStorage } from './session.server.ts'
-import { tr } from '@faker-js/faker'
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30
 export const getSessionExpirationDate = () =>
@@ -85,6 +84,7 @@ export async function login({
 		data: {
 			expirationDate: getSessionExpirationDate(),
 			userId: user.id,
+			accessToken: user.accessToken,
 		},
 	})
 	return session
@@ -139,6 +139,7 @@ export async function signup({
 					},
 				},
 			},
+			accessToken: await bcrypt.hash(username, 10), // TODO use a real token
 		},
 		select: { id: true, expirationDate: true },
 	})
@@ -176,6 +177,7 @@ export async function signupWithConnection({
 						: undefined,
 				},
 			},
+			accessToken: await bcrypt.hash(username, 10), // TODO use a real token
 		},
 		select: { id: true, expirationDate: true },
 	})
@@ -241,6 +243,7 @@ export async function verifyUserPassword(
 			}),
 		})
 	} catch (error) {
+		console.error(error)
 		return null
 	}
 
@@ -257,6 +260,7 @@ export async function verifyUserPassword(
 			select: { id: true },
 		})
 	} catch (error) {
+		console.error(error)
 		user = await prisma.user.create({
 			data: {
 				email: where.email,
@@ -271,5 +275,5 @@ export async function verifyUserPassword(
 		})
 	}
 
-	return { id: user.id }
+	return { id: user.id, accessToken: data.access_token }
 }
