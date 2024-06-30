@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test'
 import { type User as UserModel } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 import * as setCookieParser from 'set-cookie-parser'
 import {
 	getPasswordHash,
@@ -86,6 +87,7 @@ export const test = base.extend<{
 				data: {
 					expirationDate: getSessionExpirationDate(),
 					userId: user.id,
+					accessToken: await bcrypt.hash(user.id, 10), // TODO use a real token
 				},
 				select: { id: true },
 			})

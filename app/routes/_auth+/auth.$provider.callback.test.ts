@@ -248,6 +248,7 @@ async function setupUser(userData = createUser()) {
 					...userData,
 				},
 			},
+			accessToken: faker.string.uuid(),
 		},
 		select: {
 			id: true,
