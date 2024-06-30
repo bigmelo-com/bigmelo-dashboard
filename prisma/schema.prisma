@@ -92,7 +92,7 @@ model Session {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
 
-  accessToken String @default("")
+  accessToken String
 
   // non-unique foreign key
   @@index([userId])
