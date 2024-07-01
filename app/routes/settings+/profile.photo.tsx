@@ -22,7 +22,7 @@ import { ErrorList } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import {
 	getUserImgSrc,
@@ -56,9 +56,9 @@ const PhotoFormSchema = z.discriminatedUnion('intent', [
 ])
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const user = await prisma.user.findUnique({
-		where: { id: userId },
+		where: { id: sessionData?.userId },
 		select: {
 			id: true,
 			name: true,
@@ -71,7 +71,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const formData = await unstable_parseMultipartFormData(
 		request,
 		unstable_createMemoryUploadHandler({ maxPartSize: MAX_SIZE }),
@@ -102,14 +102,18 @@ export async function action({ request }: ActionFunctionArgs) {
 	const { image, intent } = submission.value
 
 	if (intent === 'delete') {
-		await prisma.userImage.deleteMany({ where: { userId } })
+		await prisma.userImage.deleteMany({
+			where: { userId: sessionData?.userId },
+		})
 		return redirect('/settings/profile')
 	}
 
 	await prisma.$transaction(async $prisma => {
-		await $prisma.userImage.deleteMany({ where: { userId } })
+		await $prisma.userImage.deleteMany({
+			where: { userId: sessionData?.userId },
+		})
 		await $prisma.user.update({
-			where: { id: userId },
+			where: { id: sessionData?.userId },
 			data: { image: { create: image } },
 		})
 	})

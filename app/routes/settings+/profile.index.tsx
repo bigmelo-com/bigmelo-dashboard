@@ -13,7 +13,7 @@ import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId, sessionKey } from '#app/utils/auth.server.ts'
+import { requireAuthedSession, sessionKey } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc, useDoubleCheck } from '#app/utils/misc.tsx'
 import { authSessionStorage } from '#app/utils/session.server.ts'
@@ -31,9 +31,9 @@ const ProfileFormSchema = z.object({
 })
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const user = await prisma.user.findUniqueOrThrow({
-		where: { id: userId },
+		where: { id: sessionData?.userId },
 		select: {
 			id: true,
 			name: true,
@@ -56,12 +56,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	const twoFactorVerification = await prisma.verification.findUnique({
 		select: { id: true },
-		where: { target_type: { type: twoFAVerificationType, target: userId } },
+		where: {
+			target_type: { type: twoFAVerificationType, target: sessionData?.userId },
+		},
 	})
 
 	const password = await prisma.password.findUnique({
 		select: { userId: true },
-		where: { userId },
+		where: { userId: sessionData?.userId },
 	})
 
 	return json({
@@ -81,18 +83,30 @@ const signOutOfSessionsActionIntent = 'sign-out-of-sessions'
 const deleteDataActionIntent = 'delete-data'
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const formData = await request.formData()
 	const intent = formData.get('intent')
 	switch (intent) {
 		case profileUpdateActionIntent: {
-			return profileUpdateAction({ request, userId, formData })
+			return profileUpdateAction({
+				request,
+				userId: sessionData?.userId,
+				formData,
+			})
 		}
 		case signOutOfSessionsActionIntent: {
-			return signOutOfSessionsAction({ request, userId, formData })
+			return signOutOfSessionsAction({
+				request,
+				userId: sessionData?.userId,
+				formData,
+			})
 		}
 		case deleteDataActionIntent: {
-			return deleteDataAction({ request, userId, formData })
+			return deleteDataAction({
+				request,
+				userId: sessionData?.userId,
+				formData,
+			})
 		}
 		default: {
 			throw new Response(`Invalid intent "${intent}"`, { status: 400 })

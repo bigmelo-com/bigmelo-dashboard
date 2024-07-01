@@ -16,7 +16,7 @@ import {
 	prepareVerification,
 	requireRecentVerification,
 } from '#app/routes/_auth+/verify.server.ts'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
@@ -38,7 +38,7 @@ const ChangeEmailSchema = z.object({
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	await requireRecentVerification(request)
-	const userId = await requireUserId(request)
+	const userId = await requireAuthedSession(request)
 	const user = await prisma.user.findUnique({
 		where: { id: userId },
 		select: { email: true },
@@ -51,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
+	const userId = await requireAuthedSession(request)
 	const formData = await request.formData()
 	const submission = await parseWithZod(formData, {
 		schema: ChangeEmailSchema.superRefine(async (data, ctx) => {

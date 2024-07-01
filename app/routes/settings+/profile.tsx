@@ -5,7 +5,7 @@ import { Link, Outlet, useMatches } from '@remix-run/react'
 import { z } from 'zod'
 import { Spacer } from '#app/components/spacer.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn } from '#app/utils/misc.tsx'
 import { useUser } from '#app/utils/user.ts'
@@ -19,9 +19,9 @@ export const handle: BreadcrumbHandle & SEOHandle = {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const user = await prisma.user.findUnique({
-		where: { id: userId },
+		where: { id: sessionData?.userId },
 		select: { username: true },
 	})
 	invariantResponse(user, 'User not found', { status: 404 })

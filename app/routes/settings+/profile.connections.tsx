@@ -17,7 +17,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '#app/components/ui/tooltip.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { resolveConnectionData } from '#app/utils/connections.server.ts'
 import {
 	ProviderConnectionForm,
@@ -51,7 +51,7 @@ async function userCanDeleteConnections(userId: string) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
+	const userId = await requireAuthedSession(request)
 	const timings = makeTimings('profile connections loader')
 	const rawConnections = await prisma.connection.findMany({
 		select: { id: true, providerName: true, providerId: true, createdAt: true },
@@ -98,7 +98,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
+	const userId = await requireAuthedSession(request)
 	const formData = await request.formData()
 	invariantResponse(
 		formData.get('intent') === 'delete-connection',
