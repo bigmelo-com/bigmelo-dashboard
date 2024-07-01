@@ -7,6 +7,7 @@ import { connectionSessionStorage, providers } from './connections.server.ts'
 import { prisma } from './db.server.ts'
 import { combineHeaders, downloadFile } from './misc.tsx'
 import { type ProviderUser } from './providers/provider.ts'
+import { getAuthHeader } from './server/getAuthHeader.ts'
 import { authSessionStorage } from './session.server.ts'
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30
@@ -23,14 +24,14 @@ for (const [providerName, provider] of Object.entries(providers)) {
 	authenticator.use(provider.getAuthStrategy(), providerName)
 }
 
-export async function getUserId(request: Request) {
+export async function getSessionData(request: Request) {
 	const authSession = await authSessionStorage.getSession(
 		request.headers.get('cookie'),
 	)
 	const sessionId = authSession.get(sessionKey)
 	if (!sessionId) return null
 	const session = await prisma.session.findUnique({
-		select: { user: { select: { id: true } } },
+		select: { user: { select: { id: true } }, accessToken: true },
 		where: { id: sessionId, expirationDate: { gt: new Date() } },
 	})
 	if (!session?.user) {
@@ -40,15 +41,15 @@ export async function getUserId(request: Request) {
 			},
 		})
 	}
-	return session.user.id
+	return { userId: session.user.id, accessToken: session.accessToken }
 }
 
-export async function requireUserId(
+export async function requireAuthedSession(
 	request: Request,
 	{ redirectTo }: { redirectTo?: string | null } = {},
 ) {
-	const userId = await getUserId(request)
-	if (!userId) {
+	const sessionData = await getSessionData(request)
+	if (!sessionData?.userId) {
 		const requestUrl = new URL(request.url)
 		redirectTo =
 			redirectTo === null
@@ -60,44 +61,14 @@ export async function requireUserId(
 			.join('?')
 		throw redirect(loginRedirect)
 	}
-	return userId
-}
-
-export async function getUserAccessToken(request: Request) {
-	const authSession = await authSessionStorage.getSession(
-		request.headers.get('cookie'),
-	)
-	const sessionId = authSession.get(sessionKey)
-	if (!sessionId) return null
-	const session = await prisma.session.findUnique({
-		select: { accessToken: true },
-		where: { id: sessionId, expirationDate: { gt: new Date() } },
-	})
-	return session?.accessToken
-}
-
-export async function requireAccessToken(
-	request: Request,
-	{ redirectTo }: { redirectTo?: string | null } = {},
-) {
-	const accessToken = await getUserAccessToken(request)
-	if (!accessToken) {
-		const requestUrl = new URL(request.url)
-		redirectTo =
-			redirectTo === null
-				? null
-				: redirectTo ?? `${requestUrl.pathname}${requestUrl.search}`
-		const loginParams = redirectTo ? new URLSearchParams({ redirectTo }) : null
-		const loginRedirect = ['/login', loginParams?.toString()]
-			.filter(Boolean)
-			.join('?')
-		throw redirect(loginRedirect)
+	return {
+		userId: sessionData.userId,
+		authHeader: getAuthHeader(sessionData.accessToken),
 	}
-	return accessToken
 }
 
 export async function requireAnonymous(request: Request) {
-	const userId = await getUserId(request)
+	const userId = await getSessionData(request)
 	if (userId) {
 		throw redirect('/')
 	}
@@ -262,6 +233,7 @@ export async function verifyUserPassword(
 	password: Password['hash'],
 ) {
 	const apiUrl = 'http://localhost:8090/v1/auth/get-token'
+
 	let res
 	try {
 		res = await fetch(apiUrl, {
