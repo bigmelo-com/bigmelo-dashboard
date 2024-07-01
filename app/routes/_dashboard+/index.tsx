@@ -14,6 +14,7 @@ import { dailyTotalsApiResponseSchema } from '#app/types/bigmelo/dailyTotals.js'
 import { get } from '#app/utils/api.js'
 import { requireAuthedSession } from '#app/utils/auth.server.js'
 import { cn } from '#app/utils/misc.tsx'
+import handleLoaderError from '#app/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '#app/utils/verifyZodSchema.js'
 import { logos } from './logos/logos.ts'
 
@@ -54,8 +55,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			dailyTotals: dailyTotals.data,
 		})
 	} catch (error) {
-		console.error(error)
-		return json(null, { status: 500 })
+		return handleLoaderError(error)
 	}
 }
 
