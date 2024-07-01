@@ -39,9 +39,7 @@ const rowClasses: Record<(typeof logos)[number]['row'], string> = {
 export async function loader({ request }: LoaderFunctionArgs) {
 	const accessToken = await requireAccessToken(request)
 	try {
-		const apiUrl = '/v1/admin-dashboard/daily-totals'
-
-		const dailyTotalsResponse = await get(apiUrl, {
+		const dailyTotalsResponse = await get('/v1/admin-dashboard/daily-totals', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},

@@ -3,8 +3,7 @@ import decamelcaseKeys from 'decamelcase-keys'
 import { type ApiResponse } from '#app/types/app/apiResponse.js'
 import logErrorResponse from './logErrorResponse'
 
-// const BASE_URL = process.env.BASE_URL
-const BASE_URL = 'http://localhost:8090'
+const API_URL = process.env.API_URL
 
 export const get = async (
 	urlPath: string,
@@ -12,7 +11,7 @@ export const get = async (
 ): Promise<ApiResponse> => {
 	const { headers: additionalHeaders = {}, ...restOfOptions } = options
 
-	const response = await fetch(`${BASE_URL}${urlPath}`, {
+	const response = await fetch(`${API_URL}${urlPath}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -43,7 +42,7 @@ export const post = async (
 ): Promise<ApiResponse> => {
 	const { headers: additionalHeaders = {}, ...restOfOptions } = options
 
-	const response = await fetch(`${BASE_URL}${urlPath}`, {
+	const response = await fetch(`${API_URL}${urlPath}`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -84,7 +83,7 @@ export const put = async (
 ): Promise<ApiResponse> => {
 	const { headers: additionalHeaders = {}, ...restOfOptions } = options
 
-	const response = await fetch(`${BASE_URL}${urlPath}`, {
+	const response = await fetch(`${API_URL}${urlPath}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
@@ -125,7 +124,7 @@ export const patch = async (
 ): Promise<ApiResponse> => {
 	const { headers: additionalHeaders = {}, ...restOfOptions } = options
 
-	const response = await fetch(`${BASE_URL}${urlPath}`, {
+	const response = await fetch(`${API_URL}${urlPath}`, {
 		method: 'PATCH',
 		headers: {
 			'Content-Type': 'application/json',
