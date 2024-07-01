@@ -4,7 +4,7 @@ import { json } from '@remix-run/node'
 import { z } from 'zod'
 import { handleVerification as handleChangeEmailVerification } from '#app/routes/settings+/profile.change-email.server.tsx'
 import { twoFAVerificationType } from '#app/routes/settings+/profile.two-factor.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { ensurePrimary } from '#app/utils/litefs.server.ts'
 import { getDomainUrl } from '#app/utils/misc.tsx'
@@ -57,13 +57,13 @@ export function getRedirectToUrl({
 }
 
 export async function requireRecentVerification(request: Request) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const shouldReverify = await shouldRequestTwoFA(request)
 	if (shouldReverify) {
 		const reqUrl = new URL(request.url)
 		const redirectUrl = getRedirectToUrl({
 			request,
-			target: userId,
+			target: sessionData?.userId,
 			type: twoFAVerificationType,
 			redirectTo: reqUrl.pathname + reqUrl.search,
 		})

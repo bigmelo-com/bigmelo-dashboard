@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import {
 	authenticator,
 	getSessionExpirationDate,
-	getUserId,
+	getSessionData,
 } from '#app/utils/auth.server.ts'
 import { ProviderNameSchema, providerLabels } from '#app/utils/connections.tsx'
 import { prisma } from '#app/utils/db.server.ts'
@@ -66,10 +66,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 		},
 	})
 
-	const userId = await getUserId(request)
+	const sessionData = await getSessionData(request)
 
-	if (existingConnection && userId) {
-		if (existingConnection.userId === userId) {
+	if (existingConnection && sessionData?.userId) {
+		if (existingConnection.userId === sessionData.userId) {
 			return redirectWithToast(
 				'/settings/profile/connections',
 				{
@@ -91,12 +91,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 	}
 
 	// If we're already logged in, then link the account
-	if (userId) {
+	if (sessionData?.userId) {
 		await prisma.connection.create({
 			data: {
 				providerName,
 				providerId: profile.id,
-				userId,
+				userId: sessionData.userId,
 			},
 		})
 		return redirectWithToast(

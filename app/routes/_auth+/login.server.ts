@@ -2,7 +2,7 @@ import { invariant } from '@epic-web/invariant'
 import { redirect } from '@remix-run/node'
 import { safeRedirect } from 'remix-utils/safe-redirect'
 import { twoFAVerificationType } from '#app/routes/settings+/profile.two-factor.tsx'
-import { getUserId, sessionKey } from '#app/utils/auth.server.ts'
+import { getSessionData, sessionKey } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { combineResponseInits } from '#app/utils/misc.tsx'
 import { authSessionStorage } from '#app/utils/session.server.ts'
@@ -144,12 +144,14 @@ export async function shouldRequestTwoFA(request: Request) {
 		request.headers.get('cookie'),
 	)
 	if (verifySession.has(unverifiedSessionIdKey)) return true
-	const userId = await getUserId(request)
-	if (!userId) return false
+	const sessionData = await getSessionData(request)
+	if (!sessionData?.userId) return false
 	// if it's over two hours since they last verified, we should request 2FA again
 	const userHasTwoFA = await prisma.verification.findUnique({
 		select: { id: true },
-		where: { target_type: { target: userId, type: twoFAVerificationType } },
+		where: {
+			target_type: { target: sessionData?.userId, type: twoFAVerificationType },
+		},
 	})
 	if (!userHasTwoFA) return false
 	const verifiedTime = authSession.get(verifiedTimeKey) ?? new Date(0)
