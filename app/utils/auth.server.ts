@@ -3,12 +3,17 @@ import { redirect } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
 import { Authenticator } from 'remix-auth'
 import { safeRedirect } from 'remix-utils/safe-redirect'
+import { type LoginRequest, LoginResponseSchema } from '#app/types/app/login.js'
+import { post } from './api.ts'
 import { connectionSessionStorage, providers } from './connections.server.ts'
 import { prisma } from './db.server.ts'
+import { isSuccessResponse } from './isSuccessResponse.ts'
 import { combineHeaders, downloadFile } from './misc.tsx'
 import { type ProviderUser } from './providers/provider.ts'
 import { getAuthHeader } from './server/getAuthHeader.ts'
 import { authSessionStorage } from './session.server.ts'
+import { validate } from './validate.ts'
+import { verifyZodSchema } from './verifyZodSchema.ts'
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30
 export const getSessionExpirationDate = () =>
@@ -224,38 +229,27 @@ export async function getPasswordHash(password: string) {
 	return hash
 }
 
-type GetTokenResponse = {
-	access_token: string
-}
-
 export async function verifyUserPassword(
 	where: Pick<User, 'email'>,
 	password: Password['hash'],
 ) {
-	const apiUrl = 'http://localhost:8090/v1/auth/get-token'
-
-	let res
-	try {
-		res = await fetch(apiUrl, {
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-			method: 'POST',
-			body: JSON.stringify({
-				email: where.email,
-				password,
-			}),
-		})
-	} catch (error) {
-		console.error(error)
-		return null
+	const requestBody: LoginRequest = {
+		email: where.email,
+		password,
 	}
 
-	const data = (await res.json()) as GetTokenResponse
-	if (!data || !data.access_token) {
-		return null
-	}
+	const response = await post('/v1/auth/get-token', requestBody)
+
+	validate(
+		isSuccessResponse(response),
+		"We're having trouble logging you in. Please try again.",
+	)
+
+	const data = verifyZodSchema(
+		response.data,
+		LoginResponseSchema,
+		'There was an error logging you in. Please try again.',
+	)
 
 	let user
 
@@ -280,5 +274,5 @@ export async function verifyUserPassword(
 		})
 	}
 
-	return { id: user.id, accessToken: data.access_token }
+	return { id: user.id, accessToken: data.accessToken }
 }
