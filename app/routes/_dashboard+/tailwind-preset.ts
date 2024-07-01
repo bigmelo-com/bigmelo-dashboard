@@ -1,6 +1,6 @@
 import { type Config } from 'tailwindcss'
 
-export const marketingPreset = {
+export const dashboardPreset = {
 	theme: {
 		extend: {
 			keyframes: {
