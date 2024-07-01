@@ -63,6 +63,39 @@ export async function requireUserId(
 	return userId
 }
 
+export async function getUserAccessToken(request: Request) {
+	const authSession = await authSessionStorage.getSession(
+		request.headers.get('cookie'),
+	)
+	const sessionId = authSession.get(sessionKey)
+	if (!sessionId) return null
+	const session = await prisma.session.findUnique({
+		select: { accessToken: true },
+		where: { id: sessionId, expirationDate: { gt: new Date() } },
+	})
+	return session?.accessToken
+}
+
+export async function requireAccessToken(
+	request: Request,
+	{ redirectTo }: { redirectTo?: string | null } = {},
+) {
+	const accessToken = await getUserAccessToken(request)
+	if (!accessToken) {
+		const requestUrl = new URL(request.url)
+		redirectTo =
+			redirectTo === null
+				? null
+				: redirectTo ?? `${requestUrl.pathname}${requestUrl.search}`
+		const loginParams = redirectTo ? new URLSearchParams({ redirectTo }) : null
+		const loginRedirect = ['/login', loginParams?.toString()]
+			.filter(Boolean)
+			.join('?')
+		throw redirect(loginRedirect)
+	}
+	return accessToken
+}
+
 export async function requireAnonymous(request: Request) {
 	const userId = await getUserId(request)
 	if (userId) {
