@@ -1,5 +1,5 @@
 import { json } from '@remix-run/node'
-import { requireUserId } from './auth.server.ts'
+import { requireAuthedSession } from './auth.server.ts'
 import { prisma } from './db.server.ts'
 import { type PermissionString, parsePermissionString } from './user.ts'
 
@@ -7,12 +7,12 @@ export async function requireUserWithPermission(
 	request: Request,
 	permission: PermissionString,
 ) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const permissionData = parsePermissionString(permission)
 	const user = await prisma.user.findFirst({
 		select: { id: true },
 		where: {
-			id: userId,
+			id: sessionData?.userId,
 			roles: {
 				some: {
 					permissions: {
@@ -41,10 +41,10 @@ export async function requireUserWithPermission(
 }
 
 export async function requireUserWithRole(request: Request, name: string) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const user = await prisma.user.findFirst({
 		select: { id: true },
-		where: { id: userId, roles: { some: { name } } },
+		where: { id: sessionData?.userId, roles: { some: { name } } },
 	})
 	if (!user) {
 		throw json(

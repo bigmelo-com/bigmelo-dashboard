@@ -15,7 +15,7 @@ import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import {
 	getPasswordHash,
-	requireUserId,
+	requireAuthedSession,
 	verifyUserPassword,
 } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
@@ -56,14 +56,14 @@ async function requirePassword(userId: string) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
-	await requirePassword(userId)
+	const sessionData = await requireAuthedSession(request)
+	await requirePassword(sessionData?.userId)
 	return json({})
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
-	await requirePassword(userId)
+	const sessionData = await requireAuthedSession(request)
+	await requirePassword(sessionData?.userId)
 	const formData = await request.formData()
 	const submission = await parseWithZod(formData, {
 		async: true,
@@ -71,7 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			async ({ currentPassword, newPassword }, ctx) => {
 				if (currentPassword && newPassword) {
 					const user = await verifyUserPassword(
-						{ email: userId },
+						{ email: sessionData?.userId },
 						currentPassword,
 					)
 					if (!user) {
@@ -100,7 +100,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	await prisma.user.update({
 		select: { username: true },
-		where: { id: userId },
+		where: { id: sessionData?.userId },
 		data: {
 			password: {
 				update: {

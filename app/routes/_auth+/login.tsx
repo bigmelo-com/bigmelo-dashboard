@@ -13,6 +13,7 @@ import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { CheckboxField, ErrorList, Field } from '#app/components/forms.tsx'
 import { Spacer } from '#app/components/spacer.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { LoginFormSchema } from '#app/types/app/login.js'
 import { login, requireAnonymous } from '#app/utils/auth.server.ts'
 import {
 	ProviderConnectionForm,
@@ -20,15 +21,7 @@ import {
 } from '#app/utils/connections.tsx'
 import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
-import { EmailSchema, PasswordSchema } from '#app/utils/user-validation.ts'
 import { handleNewSession } from './login.server.ts'
-
-const LoginFormSchema = z.object({
-	email: EmailSchema,
-	password: PasswordSchema,
-	redirectTo: z.string().optional(),
-	remember: z.boolean().optional(),
-})
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	await requireAnonymous(request)

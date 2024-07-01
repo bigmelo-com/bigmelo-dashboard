@@ -8,7 +8,7 @@ import {
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { generateTOTP } from '#app/utils/totp.server.ts'
 import { twoFAVerificationType } from './profile.two-factor.tsx'
@@ -19,25 +19,30 @@ export const handle: SEOHandle = {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const verification = await prisma.verification.findUnique({
-		where: { target_type: { type: twoFAVerificationType, target: userId } },
+		where: {
+			target_type: { type: twoFAVerificationType, target: sessionData?.userId },
+		},
 		select: { id: true },
 	})
 	return json({ is2FAEnabled: Boolean(verification) })
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const { otp: _otp, ...config } = generateTOTP()
 	const verificationData = {
 		...config,
 		type: twoFAVerifyVerificationType,
-		target: userId,
+		target: sessionData?.userId,
 	}
 	await prisma.verification.upsert({
 		where: {
-			target_type: { target: userId, type: twoFAVerifyVerificationType },
+			target_type: {
+				target: sessionData?.userId,
+				type: twoFAVerifyVerificationType,
+			},
 		},
 		create: verificationData,
 		update: verificationData,

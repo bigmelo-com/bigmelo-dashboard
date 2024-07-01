@@ -17,7 +17,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '#app/components/ui/tooltip.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { resolveConnectionData } from '#app/utils/connections.server.ts'
 import {
 	ProviderConnectionForm,
@@ -51,11 +51,11 @@ async function userCanDeleteConnections(userId: string) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const timings = makeTimings('profile connections loader')
 	const rawConnections = await prisma.connection.findMany({
 		select: { id: true, providerName: true, providerId: true, createdAt: true },
-		where: { userId },
+		where: { userId: sessionData?.userId },
 	})
 	const connections: Array<{
 		providerName: ProviderName
@@ -84,7 +84,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	return json(
 		{
 			connections,
-			canDeleteConnections: await userCanDeleteConnections(userId),
+			canDeleteConnections: await userCanDeleteConnections(sessionData?.userId),
 		},
 		{ headers: { 'Server-Timing': timings.toString() } },
 	)
@@ -98,14 +98,14 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const userId = await requireUserId(request)
+	const sessionData = await requireAuthedSession(request)
 	const formData = await request.formData()
 	invariantResponse(
 		formData.get('intent') === 'delete-connection',
 		'Invalid intent',
 	)
 	invariantResponse(
-		await userCanDeleteConnections(userId),
+		await userCanDeleteConnections(sessionData?.userId),
 		'You cannot delete your last connection unless you have a password.',
 	)
 	const connectionId = formData.get('connectionId')
@@ -113,7 +113,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	await prisma.connection.delete({
 		where: {
 			id: connectionId,
-			userId: userId,
+			userId: sessionData?.userId,
 		},
 	})
 	const toastHeaders = await createToastHeaders({

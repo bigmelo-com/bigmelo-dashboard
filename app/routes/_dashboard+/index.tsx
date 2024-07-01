@@ -12,7 +12,7 @@ import {
 } from '#app/components/ui/tooltip.tsx'
 import { dailyTotalsApiResponseSchema } from '#app/types/bigmelo/dailyTotals.js'
 import { get } from '#app/utils/api.js'
-import { requireAccessToken } from '#app/utils/auth.server.js'
+import { requireAuthedSession } from '#app/utils/auth.server.js'
 import { cn } from '#app/utils/misc.tsx'
 import { verifyZodSchema } from '#app/utils/verifyZodSchema.js'
 import { logos } from './logos/logos.ts'
@@ -37,11 +37,11 @@ const rowClasses: Record<(typeof logos)[number]['row'], string> = {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const accessToken = await requireAccessToken(request)
+	const { authHeader } = await requireAuthedSession(request)
 	try {
 		const dailyTotalsResponse = await get('/v1/admin-dashboard/daily-totals', {
 			headers: {
-				Authorization: `Bearer ${accessToken}`,
+				...authHeader,
 			},
 		})
 
