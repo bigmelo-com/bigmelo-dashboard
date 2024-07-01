@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const dailyTotals = z.object({
+export const dailyTotalsSchema = z.object({
 	newLeads: z.number(),
 	newUsers: z.number(),
 	newMessages: z.number(),
@@ -9,10 +9,12 @@ export const dailyTotals = z.object({
 	dailyChats: z.number(),
 })
 
-export type DailyTotals = z.infer<typeof dailyTotals>
+export type DailyTotals = z.infer<typeof dailyTotalsSchema>
 
-export const dailyTotalsResponse = z.object({
-	data: dailyTotals,
+export const dailyTotalsApiResponseSchema = z.object({
+	data: dailyTotalsSchema,
 })
 
-export type DailyTotalsResponse = z.infer<typeof dailyTotalsResponse>
+export type DailyTotalsApiResponse = z.infer<
+	typeof dailyTotalsApiResponseSchema
+>
