@@ -1,16 +1,21 @@
-import { LoaderFunctionArgs, json, type MetaFunction } from '@remix-run/node'
+import {
+	type LoaderFunctionArgs,
+	json,
+	type MetaFunction,
+} from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from '#app/components/ui/tooltip.tsx'
+import { dailyTotalsApiResponseSchema } from '#app/types/bigmelo/dailyTotals.js'
+import { get } from '#app/utils/api.js'
+import { requireAccessToken } from '#app/utils/auth.server.js'
 import { cn } from '#app/utils/misc.tsx'
+import { verifyZodSchema } from '#app/utils/verifyZodSchema.js'
 import { logos } from './logos/logos.ts'
-import { requireUserId } from '#app/utils/auth.server.js'
-import { prisma } from '#app/utils/db.server.js'
-import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
-import { useLoaderData } from '@remix-run/react'
 
 export const meta: MetaFunction = () => [{ title: 'Epic Notes' }]
 
@@ -32,22 +37,32 @@ const rowClasses: Record<(typeof logos)[number]['row'], string> = {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	// const userId = await requireUserId(request)
+	const accessToken = await requireAccessToken(request)
+	try {
+		const apiUrl = '/v1/admin-dashboard/daily-totals'
 
-	return json({
-		data: {
-			newLeads: 200,
-			newUsers: 112,
-			newMessages: 12,
-			newWhatsappMessages: 14583,
-			newAudioMessages: 1231,
-			dailyChats: 9,
-		},
-	})
+		const dailyTotalsResponse = await get(apiUrl, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		})
+
+		const dailyTotals = verifyZodSchema(
+			dailyTotalsResponse.data,
+			dailyTotalsApiResponseSchema,
+		)
+
+		return json({
+			dailyTotals: dailyTotals.data,
+		})
+	} catch (error) {
+		console.error(error)
+		return json(null, { status: 500 })
+	}
 }
 
 export default function Index() {
-	const { data } = useLoaderData<typeof loader>()
+	const data = useLoaderData<typeof loader>()
 	return (
 		<main className="font-poppins grid h-full place-items-center">
 			<div className="grid place-items-center px-4 py-16 xl:grid-cols-2 xl:gap-24">
@@ -62,25 +77,25 @@ export default function Index() {
 						data-paragraph
 						className="mt-6 animate-slide-top text-xl/7 text-muted-foreground [animation-delay:0.8s] [animation-fill-mode:backwards] xl:mt-8 xl:animate-slide-left xl:text-xl/6 xl:leading-10 xl:[animation-delay:1s] xl:[animation-fill-mode:backwards]"
 					></p>
-					{data && (
+					{data?.dailyTotals && (
 						<div className="mt-8 grid grid-cols-2 gap-4 text-xl/7 text-muted-foreground xl:mt-12 xl:grid-cols-3 xl:gap-6">
 							<div className="font-semibold text-foreground">
-								{data.newLeads}
+								{data?.dailyTotals.newLeads}
 							</div>
 							<div className="font-semibold text-foreground">
-								{data.newUsers}
+								{data?.dailyTotals.newUsers}
 							</div>
 							<div className="font-semibold text-foreground">
-								{data.newMessages}
+								{data?.dailyTotals.newMessages}
 							</div>
 							<div className="font-semibold text-foreground">
-								{data.newWhatsappMessages}
+								{data?.dailyTotals.newWhatsappMessages}
 							</div>
 							<div className="font-semibold text-foreground">
-								{data.newAudioMessages}
+								{data?.dailyTotals.newAudioMessages}
 							</div>
 							<div className="font-semibold text-foreground">
-								{data.dailyChats}
+								{data?.dailyTotals.dailyChats}
 							</div>
 						</div>
 					)}
