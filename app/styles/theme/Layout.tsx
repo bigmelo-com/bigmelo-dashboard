@@ -1,3 +1,4 @@
+import { Button } from '@mui/material'
 import Container from '@mui/material/Container'
 import {
 	Form,
@@ -10,7 +11,6 @@ import { useRef } from 'react'
 import { EpicProgress } from '#app/components/progress-bar.js'
 import { SearchBar } from '#app/components/search-bar.js'
 import { useToast } from '#app/components/toaster.js'
-import { Button } from '#app/components/ui/button.js'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 							{user ? (
 								<UserDropdown />
 							) : (
-								<Button asChild variant="default" size="lg">
+								<Button variant="contained">
 									<Link to="/login">Log In</Link>
 								</Button>
 							)}
@@ -93,7 +93,7 @@ function UserDropdown() {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button asChild variant="secondary">
+				<Button variant="contained">
 					<Link
 						to={`/users/${user.username}`}
 						// this is for progressive enhancement
