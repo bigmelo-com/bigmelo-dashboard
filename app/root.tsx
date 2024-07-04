@@ -16,11 +16,13 @@ import {
 	useLoaderData,
 } from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
-import { useContext } from 'react'
+import { useContext, useRef } from 'react'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { useToast } from './components/toaster.tsx'
 import { href as iconsHref } from './components/ui/icon.tsx'
+import { SettingsProvider } from './contexts/settings.tsx'
+import { applyDefaultSettings } from './lib/settings/apply-default-settings.ts'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import ClientStyleContext from './styles/theme/ClientStyleContext.tsx'
 import Layout from './styles/theme/Layout.tsx'
@@ -225,9 +227,12 @@ function App() {
 
 function AppWithProviders() {
 	const data = useLoaderData<typeof loader>()
+	const settings = useRef(applyDefaultSettings({})) // TODO: get settings from localStorage
 	return (
 		<HoneypotProvider {...data.honeyProps}>
-			<App />
+			<SettingsProvider settings={settings.current}>
+				<App />
+			</SettingsProvider>
 		</HoneypotProvider>
 	)
 }
