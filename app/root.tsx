@@ -23,6 +23,7 @@ import { useToast } from './components/toaster.tsx'
 import { href as iconsHref } from './components/ui/icon.tsx'
 import { SettingsProvider } from './contexts/settings.tsx'
 import { applyDefaultSettings } from './lib/settings/apply-default-settings.ts'
+import styles from './styles/global.css?url'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import ClientStyleContext from './styles/theme/ClientStyleContext.tsx'
 import Layout from './styles/theme/Layout.tsx'
@@ -37,6 +38,21 @@ import { useNonce } from './utils/nonce-provider.ts'
 import { getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
+
+/* Remove if fonts are not used */
+import '@fontsource/inter/100.css'
+import '@fontsource/inter/200.css'
+import '@fontsource/inter/300.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/inter/800.css'
+import '@fontsource/inter/900.css'
+import '@fontsource/roboto-mono/300.css'
+import '@fontsource/roboto-mono/400.css'
+import '@fontsource/plus-jakarta-sans/600.css'
+import '@fontsource/plus-jakarta-sans/700.css'
 
 export const links: LinksFunction = () => {
 	return [
@@ -58,6 +74,7 @@ export const links: LinksFunction = () => {
 		//These should match the css preloads above to avoid css as render blocking resource
 		{ rel: 'icon', type: 'image/svg+xml', href: '/favicons/favicon.svg' },
 		{ rel: 'stylesheet', href: tailwindStyleSheetUrl },
+		{ rel: 'stylesheet', href: styles },
 	].filter(Boolean)
 }
 
