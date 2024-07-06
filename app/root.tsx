@@ -16,18 +16,16 @@ import {
 	useLoaderData,
 } from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
-import { useContext, useRef } from 'react'
+import { useContext } from 'react'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { useToast } from './components/toaster.tsx'
 import { href as iconsHref } from './components/ui/icon.tsx'
-import { SettingsProvider } from './contexts/settings.tsx'
-import { applyDefaultSettings } from './lib/settings/apply-default-settings.ts'
+import { config } from './config.ts'
 import styles from './styles/global.css?url'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import ClientStyleContext from './styles/theme/ClientStyleContext.tsx'
 import Layout from './styles/theme/Layout.tsx'
-import theme from './styles/theme/theme.ts'
 import { getSessionData, logout } from './utils/auth.server.ts'
 import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
 import { prisma } from './utils/db.server.ts'
@@ -185,33 +183,23 @@ const Document = withEmotionCache(
 		}, [])
 
 		return (
-			<html lang="en" className={`${theme} h-full overflow-x-hidden`}>
+			<html lang="en">
 				<head>
 					<ClientHintCheck nonce={nonce} />
 					<Meta />
 					<meta charSet="utf-8" />
 					<meta name="viewport" content="width=device-width,initial-scale=1" />
-					<meta name="theme-color" content={theme.palette.primary.main} />
+					<meta content={config.site.themeColor} name="theme-color" />
 					{allowIndexing ? null : (
 						<meta name="robots" content="noindex, nofollow" />
 					)}
 					<Links />
-					<link rel="preconnect" href="https://fonts.googleapis.com" />
-					<link
-						rel="preconnect"
-						href="https://fonts.gstatic.com"
-						crossOrigin=""
-					/>
-					<link
-						rel="stylesheet"
-						href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-					/>
 					<meta
 						name="emotion-insertion-point"
 						content="emotion-insertion-point"
 					/>
 				</head>
-				<body className="bg-background text-foreground">
+				<body>
 					{children}
 					<script
 						nonce={nonce}
@@ -244,12 +232,9 @@ function App() {
 
 function AppWithProviders() {
 	const data = useLoaderData<typeof loader>()
-	const settings = useRef(applyDefaultSettings({})) // TODO: get settings from localStorage
 	return (
 		<HoneypotProvider {...data.honeyProps}>
-			<SettingsProvider settings={settings.current}>
-				<App />
-			</SettingsProvider>
+			<App />
 		</HoneypotProvider>
 	)
 }
