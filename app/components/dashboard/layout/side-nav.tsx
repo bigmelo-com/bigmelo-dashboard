@@ -10,14 +10,14 @@ import * as React from 'react'
 import { RouterLink } from '#app/components/core/link.js'
 import { Logo } from '#app/components/core/logo.js'
 import { usePathname } from '#app/hooks/use-pathname.js'
-import { useSettings } from '#app/hooks/use-settings.js'
 import { isNavItemActive } from '#app/lib/is-nav-item-active.js'
 import { paths } from '#app/paths.js'
 import { type ColorScheme } from '#app/styles/theme/types.js'
 import { type NavItemConfig } from '#app/types/nav.js'
-import { type NavColor } from '#app/types/settings.js'
+import { type Settings, type NavColor } from '#app/types/settings.js'
 import { icons } from './nav-icons'
-import { navColorStyles } from './vertical/styles'
+import { navColorStyles } from './styles'
+import { WorkspacesSwitch } from './workspaces-switch'
 
 const logoColors = {
 	dark: { blend_in: 'light', discrete: 'light', evident: 'light' },
@@ -27,22 +27,18 @@ const logoColors = {
 export interface SideNavProps {
 	color?: NavColor
 	items?: NavItemConfig[]
+	settings: Settings
 }
 
 export function SideNav({
 	color = 'evident',
 	items = [],
+	settings,
 }: SideNavProps): React.JSX.Element {
 	const pathname = usePathname()
 
-	const {
-		settings: { colorScheme = 'light' },
-	} = useSettings()
-
-	const styles = navColorStyles[colorScheme][color]
-	const logoColor = logoColors[colorScheme][color]
-
-	console.log(logoColor)
+	const styles = navColorStyles[settings.colorScheme][color]
+	const logoColor = logoColors[settings.colorScheme][color]
 
 	return (
 		<Box
@@ -71,6 +67,7 @@ export function SideNav({
 						<Logo color={logoColor} height={32} width={122} />
 					</Box>
 				</div>
+				<WorkspacesSwitch />
 			</Stack>
 			<Box
 				component="nav"

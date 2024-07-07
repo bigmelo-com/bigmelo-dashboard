@@ -1,29 +1,26 @@
 export const paths = {
 	home: '/',
-	checkout: '/checkout',
-	contact: '/contact',
-	pricing: '/pricing',
-	auth: {
-		custom: {
-			signIn: '/auth/custom/sign-in',
-			signUp: '/auth/custom/sign-up',
-			resetPassword: '/auth/custom/reset-password',
+	dashboard: {
+		overview: '/',
+		settings: {
+			account: '/settings/profile',
+			profile: (profileId: string) => `/users/${profileId}`,
 		},
 	},
-	dashboard: {
-		overview: '/dashboard',
-		settings: {
-			account: '/dashboard/settings/account',
-			billing: '/dashboard/settings/billing',
-			integrations: '/dashboard/settings/integrations',
-			notifications: '/dashboard/settings/notifications',
-			security: '/dashboard/settings/security',
-			team: '/dashboard/settings/team',
-		},
-		academy: {
-			browse: '/dashboard/academy',
-			details: (courseId: string) => `/dashboard/academy/courses/${courseId}`,
-		},
+	components: {
+		index: '/components',
+		buttons: '/components/buttons',
+		charts: '/components/charts',
+		colors: '/components/colors',
+		detailLists: '/components/detail-lists',
+		forms: '/components/forms',
+		gridLists: '/components/grid-lists',
+		groupedLists: '/components/grouped-lists',
+		inputs: '/components/inputs',
+		modals: '/components/modals',
+		quickStats: '/components/quick-stats',
+		tables: '/components/tables',
+		typography: '/components/typography',
 	},
 	notAuthorized: '/errors/not-authorized',
 	notFound: '/errors/not-found',

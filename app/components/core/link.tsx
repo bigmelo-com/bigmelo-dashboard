@@ -1,15 +1,20 @@
-import { Link, type LinkProps } from '@remix-run/react'
-import { forwardRef } from 'react'
+import * as React from 'react';
+import type { LinkProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface RouterLinkProps extends Omit<LinkProps, 'to'> {
-	href: string
+  href: string;
 }
 
-export const RouterLink = forwardRef(function RouterLink(
-	props: RouterLinkProps,
-	ref: React.Ref<HTMLAnchorElement>,
+/**
+ * This is an adapted for `react-router-dom/link` component.
+ * We use this to help us maintain consistency between React-Router and Next.js Router
+ */
+export const RouterLink = React.forwardRef(function RouterLink(
+  props: RouterLinkProps,
+  ref: React.Ref<HTMLAnchorElement>
 ) {
-	const { href, ...other } = props
+  const { href, ...other } = props;
 
-	return <Link ref={ref} to={href} {...other} />
-})
+  return <Link ref={ref} to={href} {...other} />;
+});

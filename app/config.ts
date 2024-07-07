@@ -1,7 +1,6 @@
-// import { getSiteURL } from '@/lib/get-site-url'
-// import { LogLevel } from '@/lib/logger'
-
 import { type ColorScheme, type PrimaryColor } from './styles/theme/types'
+import { getSiteURL } from '@/lib/get-site-url'
+import { LogLevel } from '@/lib/logger'
 
 export interface Config {
 	site: {
@@ -10,10 +9,10 @@ export interface Config {
 		colorScheme: ColorScheme
 		primaryColor: PrimaryColor
 		themeColor: string
-		// url: string
+		url: string
 		version: string
 	}
-	// logLevel: keyof typeof LogLevel
+	logLevel: keyof typeof LogLevel
 }
 
 export const config = {
@@ -23,9 +22,9 @@ export const config = {
 		colorScheme: 'light',
 		themeColor: '#090a0b',
 		primaryColor: 'neonBlue',
-		// url: getSiteURL(),
+		url: getSiteURL(),
 		version: import.meta.env.VITE_SITE_VERSION || '0.0.0',
 	},
-	// logLevel:
-	// 	(import.meta.env.VITE_LOG_LEVEL as keyof typeof LogLevel) || LogLevel.ALL,
+	logLevel:
+		(import.meta.env.VITE_LOG_LEVEL as keyof typeof LogLevel) || LogLevel.ALL,
 } satisfies Config

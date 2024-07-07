@@ -1,6 +1,6 @@
-import { PassThrough } from 'stream'
+import { CacheProvider } from '@emotion/react'
+import createEmotionServer from '@emotion/server/create-instance'
 import {
-	createReadableStreamFromReadable,
 	type LoaderFunctionArgs,
 	type ActionFunctionArgs,
 	type HandleDocumentRequestFunction,
@@ -8,14 +8,12 @@ import {
 import { RemixServer } from '@remix-run/react'
 import * as Sentry from '@sentry/remix'
 import chalk from 'chalk'
-import { isbot } from 'isbot'
-import { renderToPipeableStream } from 'react-dom/server'
+import * as ReactDOMServer from 'react-dom/server'
+import { ThemeProvider } from './styles/theme/components/core/theme-provider.tsx'
+import createEmotionCache from './styles/theme/createEmotionCache.ts'
 import { getEnv, init } from './utils/env.server.ts'
 import { getInstanceInfo } from './utils/litefs.server.ts'
 import { NonceProvider } from './utils/nonce-provider.ts'
-import { makeTimings } from './utils/timing.server.ts'
-
-const ABORT_DELAY = 5000
 
 init()
 global.ENV = getEnv()
@@ -35,50 +33,52 @@ export default async function handleRequest(...args: DocRequestArgs) {
 		loadContext,
 	] = args
 	const { currentInstance, primaryInstance } = await getInstanceInfo()
+	const cache = createEmotionCache()
+	const { extractCriticalToChunks } = createEmotionServer(cache)
+
 	responseHeaders.set('fly-region', process.env.FLY_REGION ?? 'unknown')
 	responseHeaders.set('fly-app', process.env.FLY_APP_NAME ?? 'unknown')
 	responseHeaders.set('fly-primary-instance', primaryInstance)
 	responseHeaders.set('fly-instance', currentInstance)
-
-	const callbackName = isbot(request.headers.get('user-agent'))
-		? 'onAllReady'
-		: 'onShellReady'
-
 	const nonce = String(loadContext.cspNonce) ?? undefined
-	return new Promise(async (resolve, reject) => {
-		let didError = false
-		// NOTE: this timing will only include things that are rendered in the shell
-		// and will not include suspended components and deferred loaders
-		const timings = makeTimings('render', 'renderToPipeableStream')
 
-		const { pipe, abort } = renderToPipeableStream(
+	function MuiRemixServer() {
+		return (
 			<NonceProvider value={nonce}>
-				<RemixServer context={remixContext} url={request.url} />
-			</NonceProvider>,
-			{
-				[callbackName]: () => {
-					const body = new PassThrough()
-					responseHeaders.set('Content-Type', 'text/html')
-					responseHeaders.append('Server-Timing', timings.toString())
-					resolve(
-						new Response(createReadableStreamFromReadable(body), {
-							headers: responseHeaders,
-							status: didError ? 500 : responseStatusCode,
-						}),
-					)
-					pipe(body)
-				},
-				onShellError: (err: unknown) => {
-					reject(err)
-				},
-				onError: () => {
-					didError = true
-				},
-				nonce,
-			},
+				<CacheProvider value={cache}>
+					<ThemeProvider>
+						<RemixServer context={remixContext} url={request.url} />
+					</ThemeProvider>
+				</CacheProvider>
+			</NonceProvider>
 		)
+	}
 
-		setTimeout(abort, ABORT_DELAY)
+	// Render the component to a string.
+	const html = ReactDOMServer.renderToString(<MuiRemixServer />)
+
+	// Grab the CSS from emotion
+	const { styles } = extractCriticalToChunks(html)
+
+	let stylesHTML = ''
+
+	styles.forEach(({ key, ids, css }) => {
+		const emotionKey = `${key} ${ids.join(' ')}`
+		const newStyleTag = `<style data-emotion="${emotionKey}">${css}</style>`
+		stylesHTML = `${stylesHTML}${newStyleTag}`
+	})
+
+	// Add the Emotion style tags after the insertion point meta tag
+	const markup = html.replace(
+		/<meta(\s)*name="emotion-insertion-point"(\s)*content="emotion-insertion-point"(\s)*\/>/,
+		`<meta name="emotion-insertion-point" content="emotion-insertion-point"/>${stylesHTML}`,
+	)
+
+	responseHeaders.set('Content-Type', 'text/html')
+
+	return new Response(`<!DOCTYPE html>${markup}`, {
+		status: responseStatusCode,
+		headers: responseHeaders,
 	})
 }
 

@@ -1,9 +1,12 @@
+import { Box, Button, Grid, Stack, Typography } from '@mui/material'
+import { ListChecks as ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks'
 import {
 	type LoaderFunctionArgs,
 	json,
 	type MetaFunction,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+import { Summary } from '#app/components/dashboard/overview/summary.js'
 import { dailyTotalsApiResponseSchema } from '#app/types/bigmelo/dailyTotals.js'
 import { get } from '#app/utils/api.js'
 import { requireAuthedSession } from '#app/utils/auth.server.js'
@@ -37,43 +40,91 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Index() {
 	const data = useLoaderData<typeof loader>()
 	return (
-		<main className="font-poppins grid h-full place-items-center">
-			<div className="grid place-items-center px-4 py-16 xl:grid-cols-2 xl:gap-24">
-				<div className="flex max-w-md flex-col items-center text-center xl:order-2 xl:items-start xl:text-left">
-					<h1
-						data-heading
-						className="mt-8 animate-slide-top text-4xl font-medium text-foreground [animation-delay:0.3s] [animation-fill-mode:backwards] md:text-5xl xl:mt-4 xl:animate-slide-left xl:text-6xl xl:[animation-delay:0.8s] xl:[animation-fill-mode:backwards]"
-					>
-						Daily Totals
-					</h1>
-					<p
-						data-paragraph
-						className="mt-6 animate-slide-top text-xl/7 text-muted-foreground [animation-delay:0.8s] [animation-fill-mode:backwards] xl:mt-8 xl:animate-slide-left xl:text-xl/6 xl:leading-10 xl:[animation-delay:1s] xl:[animation-fill-mode:backwards]"
-					></p>
-					{data?.dailyTotals && (
-						<div className="">
-							<div className="font-semibold text-foreground">
-								New Leads: {data?.dailyTotals.newLeads}
-							</div>
-							<div className="font-semibold text-foreground">
-								New Users: {data?.dailyTotals.newUsers}
-							</div>
-							<div className="font-semibold text-foreground">
-								New Messages: {data?.dailyTotals.newMessages}
-							</div>
-							<div className="font-semibold text-foreground">
-								New WhatsApp Messages: {data?.dailyTotals.newWhatsappMessages}
-							</div>
-							<div className="font-semibold text-foreground">
-								New Audio Messages: {data?.dailyTotals.newAudioMessages}
-							</div>
-							<div className="font-semibold text-foreground">
-								Daily Chats: {data?.dailyTotals.dailyChats}
-							</div>
-						</div>
-					)}
-				</div>
-			</div>
-		</main>
+		<Box
+			sx={{
+				maxWidth: 'var(--Content-maxWidth)',
+				m: 'var(--Content-margin)',
+				p: 'var(--Content-padding)',
+				width: 'var(--Content-width)',
+			}}
+		>
+			<Stack spacing={4}>
+				<Stack
+					direction={{ xs: 'column', sm: 'row' }}
+					spacing={3}
+					sx={{ alignItems: 'flex-start' }}
+				>
+					<Box sx={{ flex: '1 1 auto' }}>
+						<Typography variant="h4">Daily Totals</Typography>
+					</Box>
+					<div>
+						<Button
+							// startIcon={<PlusIcon />}
+							variant="contained"
+						>
+							Dashboard
+						</Button>
+					</div>
+				</Stack>
+				{data?.dailyTotals && (
+					<Grid container spacing={4}>
+						<Grid item md={4} xs={12}>
+							<Summary
+								amount={data?.dailyTotals.newLeads}
+								diff={0}
+								icon={ListChecksIcon}
+								title="New Leads"
+								trend="up"
+							/>
+						</Grid>
+						<Grid item md={4} xs={12}>
+							<Summary
+								amount={data?.dailyTotals.newUsers}
+								diff={0}
+								icon={ListChecksIcon}
+								title="New Users"
+								trend="up"
+							/>
+						</Grid>
+						<Grid item md={4} xs={12}>
+							<Summary
+								amount={data?.dailyTotals.newMessages}
+								diff={0}
+								icon={ListChecksIcon}
+								title="New Messages"
+								trend="up"
+							/>
+						</Grid>
+						<Grid item md={4} xs={12}>
+							<Summary
+								amount={data?.dailyTotals.newWhatsappMessages}
+								diff={0}
+								icon={ListChecksIcon}
+								title="New WhatsApp Messages"
+								trend="up"
+							/>
+						</Grid>
+						<Grid item md={4} xs={12}>
+							<Summary
+								amount={data?.dailyTotals.newAudioMessages}
+								diff={0}
+								icon={ListChecksIcon}
+								title="New Audio Messages"
+								trend="up"
+							/>
+						</Grid>
+						<Grid item md={4} xs={12}>
+							<Summary
+								amount={data?.dailyTotals.dailyChats}
+								diff={0}
+								icon={ListChecksIcon}
+								title="Daily Chats"
+								trend="up"
+							/>
+						</Grid>
+					</Grid>
+				)}
+			</Stack>
+		</Box>
 	)
 }
