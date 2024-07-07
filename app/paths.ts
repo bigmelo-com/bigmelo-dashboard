@@ -1,7 +1,7 @@
 export const paths = {
 	home: '/',
 	dashboard: {
-		overview: '/',
+		overview: '/dashboard',
 		settings: {
 			account: '/settings/profile',
 			profile: (profileId: string) => `/users/${profileId}`,
