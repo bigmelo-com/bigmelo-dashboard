@@ -1,5 +1,4 @@
-import { Button } from '@mui/material'
-import Container from '@mui/material/Container'
+import { Box, Button, GlobalStyles } from '@mui/material'
 import {
 	Form,
 	Link,
@@ -7,7 +6,9 @@ import {
 	useMatches,
 	useSubmit,
 } from '@remix-run/react'
-import { useRef } from 'react'
+import { Fragment, useRef } from 'react'
+import { layoutConfig } from '#app/components/dashboard/layout/config.js'
+import { SideNav } from '#app/components/dashboard/layout/side-nav.js'
 import { EpicProgress } from '#app/components/progress-bar.js'
 import { SearchBar } from '#app/components/search-bar.js'
 import { useToast } from '#app/components/toaster.js'
@@ -21,10 +22,8 @@ import {
 import { Icon } from '#app/components/ui/icon.js'
 import { EpicToaster } from '#app/components/ui/sonner.js'
 import { type loader } from '#app/root.js'
-import { ThemeSwitch } from '#app/routes/resources+/theme-switch.js'
 import { getUserImgSrc } from '#app/utils/misc.js'
 import { useOptionalUser, useUser } from '#app/utils/user.js'
-// import Box from '@mui/material/Box'
 
 // import Copyright from './Copyright'
 // import ProTip from './ProTip'
@@ -38,38 +37,86 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 	useToast(data.toast)
 	return (
-		<Container>
-			<div className="flex h-screen flex-col justify-between">
-				<header className="container py-6">
-					<nav className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap md:gap-8">
+		<Fragment>
+			<GlobalStyles
+				styles={{
+					body: {
+						'--MainNav-height': '56px',
+						'--MainNav-zIndex': 1000,
+						'--SideNav-width': '280px',
+						'--SideNav-zIndex': 1100,
+						'--MobileNav-width': '320px',
+						'--MobileNav-zIndex': 1100,
+					},
+				}}
+			/>
+			<Box
+				sx={{
+					bgcolor: 'var(--mui-palette-background-default)',
+					display: 'flex',
+					flexDirection: 'column',
+					position: 'relative',
+					minHeight: '100%',
+				}}
+			>
+				<SideNav color="evident" items={layoutConfig.navItems} />
+				<Box
+					sx={{
+						display: 'flex',
+						flex: '1 1 auto',
+						flexDirection: 'column',
+						pl: { lg: 'var(--SideNav-width)' },
+					}}
+				>
+					{/* <MainNav items={layoutConfig.navItems} /> */}
+					<header className="py-6">
+						<nav className="flex items-center justify-between gap-4 md:gap-8">
+							<Logo />
+							<div className="ml-auto hidden max-w-sm flex-1 sm:block">
+								{searchBar}
+							</div>
+							<div className="flex items-center gap-10">
+								{user ? (
+									<UserDropdown />
+								) : (
+									<Button variant="contained">
+										<Link to="/login">Log In</Link>
+									</Button>
+								)}
+							</div>
+							<div className="block w-full sm:hidden">{searchBar}</div>
+						</nav>
+					</header>
+
+					<Box
+						component="main"
+						sx={{
+							'--Content-margin': '0 auto',
+							'--Content-maxWidth': 'var(--maxWidth-xl)',
+							'--Content-paddingX': '24px',
+							'--Content-paddingY': { xs: '24px', lg: '64px' },
+							'--Content-padding':
+								'var(--Content-paddingY) var(--Content-paddingX)',
+							'--Content-width': '100%',
+							display: 'flex',
+							flex: '1 1 auto',
+							flexDirection: 'column',
+						}}
+					>
+						{children}
+					</Box>
+
+					{/* <div className="container flex justify-between pb-5">
 						<Logo />
-						<div className="ml-auto hidden max-w-sm flex-1 sm:block">
-							{searchBar}
-						</div>
-						<div className="flex items-center gap-10">
-							{user ? (
-								<UserDropdown />
-							) : (
-								<Button variant="contained">
-									<Link to="/login">Log In</Link>
-								</Button>
-							)}
-						</div>
-						<div className="block w-full sm:hidden">{searchBar}</div>
-					</nav>
-				</header>
+						TODO: Fix switcher
+						<ThemeSwitch userPreference={data.requestInfo.userPrefs.theme} />
+					</div> */}
 
-				<div className="flex-1">{children}</div>
-
-				<div className="container flex justify-between pb-5">
-					<Logo />
-					{/* TODO: Fix switcher */}
-					<ThemeSwitch userPreference={data.requestInfo.userPrefs.theme} />
-				</div>
-			</div>
-			<EpicToaster closeButton position="top-center" theme="system" />
-			<EpicProgress />
-		</Container>
+					<EpicToaster closeButton position="top-center" theme="system" />
+					<EpicProgress />
+				</Box>
+			</Box>
+		</Fragment>
 	)
 }
 
