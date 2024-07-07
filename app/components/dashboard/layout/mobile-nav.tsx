@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
+import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ArrowSquareOut as ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
@@ -7,55 +8,65 @@ import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/Caret
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight'
 import * as React from 'react'
 
-import { RouterLink } from '#app/components/core/link.js'
-import { Logo } from '#app/components/core/logo.js'
-import { usePathname } from '#app/hooks/use-pathname.js'
-import { isNavItemActive } from '#app/lib/is-nav-item-active.js'
-import { paths } from '#app/paths.js'
-import { type ColorScheme } from '#app/styles/theme/types.js'
-import { type NavItemConfig } from '#app/types/nav.js'
-import { type Settings, type NavColor } from '#app/types/settings.js'
 import { icons } from './nav-icons'
-import { navColorStyles } from './styles'
 import { WorkspacesSwitch } from './workspaces-switch'
+import { RouterLink } from '@/components/core/link'
+import { Logo } from '@/components/core/logo'
+import { usePathname } from '@/hooks/use-pathname'
+import { isNavItemActive } from '@/lib/is-nav-item-active'
+import { paths } from '@/paths'
+import { type NavItemConfig } from '@/types/nav'
 
-const logoColors = {
-	dark: { blend_in: 'light', discrete: 'light', evident: 'light' },
-	light: { blend_in: 'dark', discrete: 'dark', evident: 'light' },
-} as Record<ColorScheme, Record<NavColor, 'dark' | 'light'>>
-
-export interface SideNavProps {
-	color?: NavColor
+export interface MobileNavProps {
+	onClose?: () => void
+	open?: boolean
 	items?: NavItemConfig[]
-	settings: Settings
 }
 
-export function SideNav({
-	color = 'evident',
+export function MobileNav({
 	items = [],
-	settings,
-}: SideNavProps): React.JSX.Element {
+	open,
+	onClose,
+}: MobileNavProps): React.JSX.Element {
 	const pathname = usePathname()
 
-	const styles = navColorStyles[settings.colorScheme][color]
-	const logoColor = logoColors[settings.colorScheme][color]
-
 	return (
-		<Box
-			sx={{
-				...styles,
-				bgcolor: 'var(--SideNav-background)',
-				borderRight: 'var(--SideNav-border)',
-				color: 'var(--SideNav-color)',
-				display: { xs: 'none', lg: 'flex' },
-				flexDirection: 'column',
-				height: '100%',
-				left: 0,
-				position: 'fixed',
-				top: 0,
-				width: 'var(--SideNav-width)',
-				zIndex: 'var(--SideNav-zIndex)',
+		<Drawer
+			PaperProps={{
+				sx: {
+					'--MobileNav-background': 'var(--mui-palette-neutral-950)',
+					'--MobileNav-color': 'var(--mui-palette-common-white)',
+					'--NavGroup-title-color': 'var(--mui-palette-neutral-400)',
+					'--NavItem-color': 'var(--mui-palette-neutral-300)',
+					'--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
+					'--NavItem-active-background': 'var(--mui-palette-primary-main)',
+					'--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
+					'--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
+					'--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
+					'--NavItem-icon-active-color':
+						'var(--mui-palette-primary-contrastText)',
+					'--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
+					'--NavItem-expand-color': 'var(--mui-palette-neutral-400)',
+					'--NavItem-children-border': 'var(--mui-palette-neutral-700)',
+					'--NavItem-children-indicator': 'var(--mui-palette-neutral-400)',
+					'--Workspaces-background': 'var(--mui-palette-neutral-950)',
+					'--Workspaces-border-color': 'var(--mui-palette-neutral-700)',
+					'--Workspaces-title-color': 'var(--mui-palette-neutral-400)',
+					'--Workspaces-name-color': 'var(--mui-palette-neutral-300)',
+					'--Workspaces-expand-color': 'var(--mui-palette-neutral-400)',
+					bgcolor: 'var(--MobileNav-background)',
+					color: 'var(--MobileNav-color)',
+					display: 'flex',
+					flexDirection: 'column',
+					maxWidth: '100%',
+					width: 'var(--MobileNav-width)',
+					zIndex: 'var(--MobileNav-zIndex)',
+					scrollbarWidth: 'none',
+					'&::-webkit-scrollbar': { display: 'none' },
+				},
 			}}
+			onClose={onClose}
+			open={open}
 		>
 			<Stack spacing={2} sx={{ p: 2 }}>
 				<div>
@@ -64,32 +75,25 @@ export function SideNav({
 						href={paths.home}
 						sx={{ display: 'inline-flex' }}
 					>
-						<Logo color={logoColor} height={32} width={122} />
+						<Logo color="light" height={32} width={122} />
 					</Box>
 				</div>
 				<WorkspacesSwitch />
 			</Stack>
-			<Box
-				component="nav"
-				sx={{
-					flex: '1 1 auto',
-					overflowY: 'auto',
-					p: 2,
-					scrollbarWidth: 'none',
-					'&::-webkit-scrollbar': { display: 'none' },
-				}}
-			>
-				{renderNavGroups({ items, pathname })}
+			<Box component="nav" sx={{ flex: '1 1 auto', p: 2 }}>
+				{renderNavGroups({ items, onClose, pathname })}
 			</Box>
-		</Box>
+		</Drawer>
 	)
 }
 
 function renderNavGroups({
 	items,
+	onClose,
 	pathname,
 }: {
 	items: NavItemConfig[]
+	onClose?: () => void
 	pathname: string
 }): React.JSX.Element {
 	const children = items.reduce(
@@ -109,7 +113,9 @@ function renderNavGroups({
 							</Typography>
 						</div>
 					) : null}
-					<div>{renderNavItems({ depth: 0, items: curr.items, pathname })}</div>
+					<div>
+						{renderNavItems({ depth: 0, items: curr.items, onClose, pathname })}
+					</div>
 				</Stack>,
 			)
 
@@ -128,10 +134,12 @@ function renderNavGroups({
 function renderNavItems({
 	depth = 0,
 	items = [],
+	onClose,
 	pathname,
 }: {
 	depth: number
 	items?: NavItemConfig[]
+	onClose?: () => void
 	pathname: string
 }): React.JSX.Element {
 	const children = items.reduce(
@@ -152,11 +160,17 @@ function renderNavItems({
 					depth={depth}
 					forceOpen={forceOpen}
 					key={key}
+					onClose={onClose}
 					pathname={pathname}
 					{...item}
 				>
 					{childItems
-						? renderNavItems({ depth: depth + 1, pathname, items: childItems })
+						? renderNavItems({
+								depth: depth + 1,
+								items: childItems,
+								onClose,
+								pathname,
+							})
 						: null}
 				</NavItem>,
 			)
@@ -182,6 +196,7 @@ interface NavItemProps extends Omit<NavItemConfig, 'items'> {
 	children?: React.ReactNode
 	depth: number
 	forceOpen?: boolean
+	onClose?: () => void
 	pathname: string
 }
 
@@ -195,6 +210,7 @@ function NavItem({
 	icon,
 	label,
 	matcher,
+	onClose,
 	pathname,
 	title,
 }: NavItemProps): React.JSX.Element {
@@ -219,7 +235,7 @@ function NavItem({
 							onClick: (): void => {
 								setOpen(!open)
 							},
-							onKeyUp: (event: React.KeyboardEvent<HTMLDivElement>): void => {
+							onKeyUp: (event: React.KeyboardEvent<HTMLElement>): void => {
 								if (event.key === 'Enter' || event.key === ' ') {
 									setOpen(!open)
 								}
@@ -233,6 +249,9 @@ function NavItem({
 										href,
 										target: external ? '_blank' : undefined,
 										rel: external ? 'noreferrer' : undefined,
+										onClick: (): void => {
+											onClose?.()
+										},
 									}
 								: { role: 'button' }),
 						})}

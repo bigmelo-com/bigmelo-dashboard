@@ -17,12 +17,6 @@ export const layoutConfig = {
 					href: paths.dashboard.overview,
 					icon: 'house',
 				},
-				{
-					key: 'analytics',
-					title: 'Analytics',
-					href: paths.dashboard.overview,
-					icon: 'chart-pie',
-				},
 			],
 		},
 		{
@@ -34,30 +28,8 @@ export const layoutConfig = {
 					title: 'Settings',
 					href: paths.dashboard.settings.account,
 					icon: 'gear',
-					matcher: { type: 'startsWith', href: '/dashboard/settings' },
+					matcher: { type: 'startsWith', href: '/settings/profile' },
 				},
-				// {
-				// 	key: 'customers',
-				// 	title: 'Customers',
-				// 	icon: 'users',
-				// 	items: [
-				// 		{
-				// 			key: 'customers',
-				// 			title: 'List customers',
-				// 			href: paths.dashboard.customers.list,
-				// 		},
-				// 		{
-				// 			key: 'customers:create',
-				// 			title: 'Create customer',
-				// 			href: paths.dashboard.customers.create,
-				// 		},
-				// 		{
-				// 			key: 'customers:details',
-				// 			title: 'Customer details',
-				// 			href: paths.dashboard.customers.details('1'),
-				// 		},
-				// 	],
-				// },
 			],
 		},
 	],
