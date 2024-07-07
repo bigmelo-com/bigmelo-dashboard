@@ -3,7 +3,7 @@ export const paths = {
 	dashboard: {
 		overview: '/dashboard',
 		settings: {
-			account: '/settings/profile',
+			account: 'settings/profile',
 			profile: (profileId: string) => `/users/${profileId}`,
 		},
 	},
