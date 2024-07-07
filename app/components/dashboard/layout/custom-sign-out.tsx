@@ -1,9 +1,13 @@
 import MenuItem from '@mui/material/MenuItem'
-import * as React from 'react'
+import { Form } from '@remix-run/react'
 
-export function CustomSignOut(): React.JSX.Element {
+type CustomSignOutProps = {
+	closePopover?: () => void
+}
+
+export const CustomSignOut = ({ closePopover }: CustomSignOutProps) => {
 	const handleSignOut = () => {
-		console.log('signing out')
+		closePopover && closePopover()
 	}
 
 	return (
@@ -12,7 +16,9 @@ export function CustomSignOut(): React.JSX.Element {
 			onClick={handleSignOut}
 			sx={{ justifyContent: 'center' }}
 		>
-			Sign out
+			<Form action="/logout" method="POST">
+				<button type="submit">Logout</button>
+			</Form>
 		</MenuItem>
 	)
 }

@@ -5,22 +5,14 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
-import { CreditCard as CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard'
 import { LockKey as LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey'
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import * as React from 'react'
 
+import { useOptionalUser } from '#app/utils/user.js'
 import { CustomSignOut } from './custom-sign-out'
 import { RouterLink } from '@/components/core/link'
 import { paths } from '@/paths'
-import { type User } from '@/types/user'
-
-const user = {
-	id: 'USR-000',
-	name: 'Sofia Rivers',
-	avatar: '/assets/avatar.png',
-	email: 'sofia@devias.io',
-} satisfies User
 
 export interface UserPopoverProps {
 	anchorEl: null | Element
@@ -33,6 +25,7 @@ export function UserPopover({
 	onClose,
 	open,
 }: UserPopoverProps): React.JSX.Element {
+	const user = useOptionalUser()
 	return (
 		<Popover
 			anchorEl={anchorEl}
@@ -43,9 +36,9 @@ export function UserPopover({
 			transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 		>
 			<Box sx={{ p: 2 }}>
-				<Typography>{user.name}</Typography>
+				<Typography>{user?.name}</Typography>
 				<Typography color="text.secondary" variant="body2">
-					{user.email}
+					{user?.username}
 				</Typography>
 			</Box>
 			<Divider />
@@ -70,20 +63,10 @@ export function UserPopover({
 					</ListItemIcon>
 					Security
 				</MenuItem>
-				<MenuItem
-					component={RouterLink}
-					href={paths.dashboard.settings.account}
-					onClick={onClose}
-				>
-					<ListItemIcon>
-						<CreditCardIcon />
-					</ListItemIcon>
-					Billing
-				</MenuItem>
 			</List>
 			<Divider />
 			<Box sx={{ p: 1 }}>
-				<CustomSignOut />
+				<CustomSignOut closePopover={onClose} />
 			</Box>
 		</Popover>
 	)

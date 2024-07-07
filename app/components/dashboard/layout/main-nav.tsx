@@ -9,13 +9,14 @@ import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List'
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import * as React from 'react'
 
+import { getUserImgSrc } from '#app/utils/misc.js'
+import { useOptionalUser } from '#app/utils/user.js'
 import { MobileNav } from './mobile-nav'
 import { SearchDialog } from './search-dialog'
 import { UserPopover } from './user-popover'
 import { useDialog } from '@/hooks/use-dialog'
 import { usePopover } from '@/hooks/use-popover'
 import { type NavItemConfig } from '@/types/nav'
-import { type User } from '@/types/user'
 
 export interface MainNavProps {
 	items: NavItemConfig[]
@@ -115,15 +116,9 @@ function SearchButton(): React.JSX.Element {
 	)
 }
 
-const user = {
-	id: 'USR-000',
-	name: 'Sofia Rivers',
-	avatar: '/assets/avatar.png',
-	email: 'sofia@devias.io',
-} satisfies User
-
 function UserButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>()
+	const user = useOptionalUser()
 
 	return (
 		<React.Fragment>
@@ -153,7 +148,7 @@ function UserButton(): React.JSX.Element {
 					}}
 					variant="dot"
 				>
-					<Avatar src={user.avatar} />
+					<Avatar src={getUserImgSrc(user?.image?.id)} />
 				</Badge>
 			</Box>
 			<UserPopover
