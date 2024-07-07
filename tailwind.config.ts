@@ -1,7 +1,6 @@
 import { type Config } from 'tailwindcss'
 import animatePlugin from 'tailwindcss-animate'
 import radixPlugin from 'tailwindcss-radix'
-import { dashboardPreset } from './app/routes/_dashboard+/tailwind-preset.ts'
 import { extendedTheme } from './app/utils/extended-theme.ts'
 
 export default {
@@ -17,6 +16,6 @@ export default {
 		},
 		extend: extendedTheme,
 	},
-	presets: [dashboardPreset],
+
 	plugins: [animatePlugin, radixPlugin],
 } satisfies Config
