@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { vitePlugin as remix } from '@remix-run/dev'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { glob } from 'glob'
@@ -70,4 +71,12 @@ export default defineConfig({
 				})
 			: null,
 	],
+	resolve: {
+		alias: [
+			{
+				find: /^@\/(.+)/,
+				replacement: path.join(process.cwd(), 'app/$1'),
+			},
+		],
+	},
 })
