@@ -25,7 +25,6 @@ import { config } from './config.ts'
 import styles from './styles/global.css?url'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import ClientStyleContext from './styles/theme/ClientStyleContext.tsx'
-import Layout from './styles/theme/Layout.tsx'
 import { getSessionData, logout } from './utils/auth.server.ts'
 import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
 import { prisma } from './utils/db.server.ts'
@@ -223,9 +222,7 @@ function App() {
 
 	return (
 		<Document nonce={nonce} allowIndexing={allowIndexing} env={data.ENV}>
-			<Layout>
-				<Outlet />
-			</Layout>
+			<Outlet />
 		</Document>
 	)
 }
