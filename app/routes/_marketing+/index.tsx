@@ -1,7 +1,12 @@
 import { Box, Stack } from '@mui/material'
-import { type MetaFunction } from '@remix-run/node'
+import { redirect, type MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => [{ title: 'Bigmelo' }]
+
+export async function loader() {
+	// Redirect to the dashboard while we build out the marketing content
+	return redirect('/dashboard')
+}
 
 export default function Index() {
 	return (
