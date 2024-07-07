@@ -66,7 +66,7 @@ export function UserPopover({
 			</List>
 			<Divider />
 			<Box sx={{ p: 1 }}>
-				<CustomSignOut />
+				<CustomSignOut closePopover={onClose} />
 			</Box>
 		</Popover>
 	)
