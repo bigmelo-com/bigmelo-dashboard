@@ -1,24 +1,16 @@
 import { Box, GlobalStyles } from '@mui/material'
-import { useLoaderData } from '@remix-run/react'
+import { type MetaFunction } from '@remix-run/node'
+import { Outlet } from '@remix-run/react'
 import { Fragment } from 'react'
 import { layoutConfig } from '#app/components/dashboard/layout/config.js'
+import { MainNav } from '#app/components/dashboard/layout/main-nav.js'
 import { SideNav } from '#app/components/dashboard/layout/side-nav.js'
 import { EpicProgress } from '#app/components/progress-bar.js'
-import { useToast } from '#app/components/toaster.js'
-
 import { EpicToaster } from '#app/components/ui/sonner.js'
-import { type loader } from '#app/root.js'
 
-import { MainNav } from './main-nav'
+export const meta: MetaFunction = () => [{ title: 'Dashboard' }]
 
-export default function DashboardLayout({
-	children,
-}: {
-	children: React.ReactNode
-}) {
-	const data = useLoaderData<typeof loader>()
-
-	useToast(data.toast)
+export default function Index() {
 	return (
 		<Fragment>
 			<GlobalStyles
@@ -77,7 +69,7 @@ export default function DashboardLayout({
 							flexDirection: 'column',
 						}}
 					>
-						{children}
+						<Outlet />
 					</Box>
 					<EpicToaster closeButton position="top-center" theme="system" />
 					<EpicProgress />
