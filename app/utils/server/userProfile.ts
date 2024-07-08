@@ -16,7 +16,7 @@ export async function getUserProfile(
 	sessionData: SessionData,
 	options?: { timings?: Timings },
 ) {
-	sessionData?.userId
+	return sessionData?.userId
 		? await time(
 				async () => {
 					const remixUser = await prisma.user.findUniqueOrThrow({

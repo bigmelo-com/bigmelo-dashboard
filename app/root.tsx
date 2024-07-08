@@ -90,7 +90,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		desc: 'getUserId in root',
 	})
 
-	const user = getUserProfile(sessionData, { timings })
+	const user = await getUserProfile(sessionData, { timings })
 
 	if (sessionData?.userId && !user) {
 		console.info('something weird happened')
