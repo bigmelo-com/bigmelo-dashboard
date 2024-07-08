@@ -1,5 +1,3 @@
-'use client'
-
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -36,7 +34,7 @@ const icons = {
 	'user-circle': UserCircleIcon,
 } as Record<string, Icon>
 
-export function SideNav(): React.JSX.Element {
+export function SettingsSideNav(): React.JSX.Element {
 	const pathname = usePathname()
 	const user = useUser()
 
