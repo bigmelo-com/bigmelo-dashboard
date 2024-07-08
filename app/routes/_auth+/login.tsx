@@ -129,14 +129,14 @@ export default function LoginPage() {
 									})}
 									errors={fields.remember.errors}
 								/>
-								<div>
+								{/* <div>
 									<Link
 										to="/forgot-password"
 										className="text-body-xs font-semibold"
 									>
 										Forgot password?
 									</Link>
-								</div>
+								</div> */}
 							</div>
 
 							<input
@@ -155,7 +155,7 @@ export default function LoginPage() {
 								</StatusButton>
 							</div>
 						</Form>
-						<div className="flex items-center justify-center gap-2 pt-6">
+						{/* <div className="flex items-center justify-center gap-2 pt-6">
 							<span className="text-muted-foreground">New here?</span>
 							<Link
 								to={
@@ -166,7 +166,7 @@ export default function LoginPage() {
 							>
 								Create an account
 							</Link>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</div>

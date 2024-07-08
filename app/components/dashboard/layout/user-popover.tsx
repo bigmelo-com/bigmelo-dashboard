@@ -53,7 +53,7 @@ export function UserPopover({
 					</ListItemIcon>
 					Account
 				</MenuItem>
-				<MenuItem
+				{/* <MenuItem
 					component={RouterLink}
 					href={paths.dashboard.settings.profile}
 					onClick={onClose}
@@ -62,7 +62,7 @@ export function UserPopover({
 						<LockKeyIcon />
 					</ListItemIcon>
 					Security
-				</MenuItem>
+				</MenuItem> */}
 			</List>
 			<Divider />
 			<Box sx={{ p: 1 }}>
