@@ -1,15 +1,9 @@
 import { z } from 'zod'
-import {
-	EmailSchema,
-	NameSchema,
-	PhoneNumberSchema,
-} from '#app/utils/user-validation.js'
+import { NameSchema } from '#app/utils/user-validation.js'
 
 export const ProfileFormSchema = z.object({
 	firstName: NameSchema.optional(),
 	lastName: NameSchema.optional(),
-	phoneNumber: PhoneNumberSchema.readonly(),
-	email: EmailSchema.readonly(),
 })
 
 export const ProfileResponseSchema = z.object({

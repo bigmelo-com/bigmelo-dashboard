@@ -145,22 +145,10 @@ export default function EditUserProfile() {
 }
 
 async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
-	const submission = await parseWithZod(formData, {
-		async: true,
-		schema: ProfileFormSchema.superRefine(async ({ email }, ctx) => {
-			const existingEmail = await prisma.user.findUnique({
-				where: { email },
-				select: { id: true },
-			})
-			if (existingEmail && existingEmail.id !== userId) {
-				ctx.addIssue({
-					path: ['email'],
-					code: z.ZodIssueCode.custom,
-					message: 'A user already exists with this email',
-				})
-			}
-		}),
+	const submission = parseWithZod(formData, {
+		schema: ProfileFormSchema,
 	})
+
 	if (submission.status !== 'success') {
 		return json(
 			{ result: submission.reply() },
@@ -170,13 +158,7 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 
 	const data = submission.value
 
-	await prisma.user.update({
-		select: { email: true },
-		where: { id: userId },
-		data: {
-			email: data.email,
-		},
-	})
+	console.log('Implement me', data, userId)
 
 	return json({
 		result: submission.reply(),
@@ -196,17 +178,15 @@ function UpdateProfile() {
 			return parseWithZod(formData, { schema: ProfileFormSchema })
 		},
 		defaultValue: {
-			email: data.user?.email,
 			firstName: data.user?.firstName,
 			lastName: data.user?.lastName,
-			phoneNumber: data.user?.phoneNumber,
 		},
 	})
 
 	return (
 		<fetcher.Form method="POST" {...getFormProps(form)}>
 			<div className="grid grid-cols-6 gap-x-10">
-				<Field
+				{/* <Field
 					className="col-span-3"
 					labelProps={{
 						htmlFor: fields.email.id,
@@ -223,7 +203,7 @@ function UpdateProfile() {
 					}}
 					inputProps={getInputProps(fields.phoneNumber, { type: 'text' })}
 					errors={fields.phoneNumber.errors}
-				/>
+				/> */}
 				<Field
 					className="col-span-3"
 					labelProps={{ htmlFor: fields.firstName.id, children: 'First name' }}
