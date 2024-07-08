@@ -31,7 +31,7 @@ import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
 import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
-import { getUserProfile } from './utils/server/userProfile.ts'
+import { getProfile } from './utils/server/profile.ts'
 import { getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
@@ -90,7 +90,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		desc: 'getUserId in root',
 	})
 
-	const user = await getUserProfile(sessionData, { timings })
+	const user = await getProfile(sessionData, { timings })
 
 	if (sessionData?.userId && !user) {
 		console.info('something weird happened')

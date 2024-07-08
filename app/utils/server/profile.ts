@@ -12,7 +12,7 @@ type SessionData = {
 	accessToken: string
 } | null
 
-export async function getUserProfile(
+export async function getProfile(
 	sessionData: SessionData,
 	options?: { timings?: Timings },
 ) {
