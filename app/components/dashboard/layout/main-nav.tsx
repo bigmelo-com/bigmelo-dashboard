@@ -10,7 +10,7 @@ import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/di
 import * as React from 'react'
 
 import { getUserImgSrc } from '#app/utils/misc.js'
-import { useOptionalUser } from '#app/utils/user.js'
+import { useUser } from '#app/utils/user.js'
 import { MobileNav } from './mobile-nav'
 import { SearchDialog } from './search-dialog'
 import { UserPopover } from './user-popover'
@@ -118,7 +118,7 @@ function SearchButton(): React.JSX.Element {
 
 function UserButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>()
-	const user = useOptionalUser()
+	const user = useUser()
 
 	return (
 		<React.Fragment>

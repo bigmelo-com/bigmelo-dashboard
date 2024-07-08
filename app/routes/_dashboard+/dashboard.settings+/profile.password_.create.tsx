@@ -10,7 +10,6 @@ import {
 import { Form, Link, useActionData } from '@remix-run/react'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import {
 	getPasswordHash,
@@ -19,10 +18,8 @@ import {
 import { prisma } from '#app/utils/db.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
 import { PasswordAndConfirmPasswordSchema } from '#app/utils/user-validation.ts'
-import { type BreadcrumbHandle } from './profile.tsx'
 
-export const handle: BreadcrumbHandle & SEOHandle = {
-	breadcrumb: <Icon name="dots-horizontal">Password</Icon>,
+export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
 }
 
