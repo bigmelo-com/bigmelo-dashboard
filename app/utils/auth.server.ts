@@ -112,11 +112,8 @@ export async function resetUserPassword({
 export async function signup({
 	email,
 	password,
-	name,
 }: {
 	email: User['email']
-
-	name: User['name']
 	password: string
 }) {
 	const hashedPassword = await getPasswordHash(password)
@@ -127,7 +124,6 @@ export async function signup({
 			user: {
 				create: {
 					email: email.toLowerCase(),
-					name,
 					roles: { connect: { name: 'user' } },
 					password: {
 						create: {

@@ -41,7 +41,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		where: { id: sessionData?.userId },
 		select: {
 			id: true,
-			name: true,
 			email: true,
 			image: {
 				select: { id: true },
@@ -196,7 +195,6 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 		select: { email: true },
 		where: { id: userId },
 		data: {
-			name: data.name,
 			email: data.email,
 		},
 	})
@@ -220,7 +218,6 @@ function UpdateProfile() {
 		},
 		defaultValue: {
 			email: data.user.email,
-			name: data.user.name,
 		},
 	})
 

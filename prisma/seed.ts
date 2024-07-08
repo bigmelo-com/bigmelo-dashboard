@@ -120,7 +120,6 @@ async function seed() {
 		select: { id: true },
 		data: {
 			email: 'kody@kcd.dev',
-			name: 'Kody',
 			image: { create: kodyImages.kodyUser },
 			password: { create: createPassword('kodylovesyou') },
 			roles: { connect: [{ name: 'admin' }, { name: 'user' }] },
