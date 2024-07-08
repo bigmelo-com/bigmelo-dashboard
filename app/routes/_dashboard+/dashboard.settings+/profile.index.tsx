@@ -1,7 +1,17 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
-import { invariantResponse } from '@epic-web/invariant'
+import {
+	Avatar,
+	Box,
+	Card,
+	CardContent,
+	CardHeader,
+	Stack,
+	Typography,
+} from '@mui/material'
 import { type SEOHandle } from '@nasa-gcn/remix-seo'
+import { Camera as CameraIcon } from '@phosphor-icons/react/dist/ssr/Camera'
+import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import {
 	json,
 	type LoaderFunctionArgs,
@@ -10,16 +20,11 @@ import {
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
-import { Button } from '#app/components/ui/button.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireAuthedSession, sessionKey } from '#app/utils/auth.server.ts'
+import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
-import { getUserImgSrc, useDoubleCheck } from '#app/utils/misc.tsx'
-import { authSessionStorage } from '#app/utils/session.server.ts'
-import { redirectWithToast } from '#app/utils/toast.server.ts'
+import { getUserImgSrc } from '#app/utils/misc.tsx'
 import { NameSchema, UsernameSchema } from '#app/utils/user-validation.ts'
-import { twoFAVerificationType } from './profile.two-factor.tsx'
 
 export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
@@ -54,22 +59,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		},
 	})
 
-	const twoFactorVerification = await prisma.verification.findUnique({
-		select: { id: true },
-		where: {
-			target_type: { type: twoFAVerificationType, target: sessionData?.userId },
-		},
-	})
-
-	const password = await prisma.password.findUnique({
-		select: { userId: true },
-		where: { userId: sessionData?.userId },
-	})
-
 	return json({
 		user,
-		hasPassword: Boolean(password),
-		isTwoFactorEnabled: Boolean(twoFactorVerification),
 	})
 }
 
@@ -79,8 +70,6 @@ type ProfileActionArgs = {
 	formData: FormData
 }
 const profileUpdateActionIntent = 'update-profile'
-const signOutOfSessionsActionIntent = 'sign-out-of-sessions'
-const deleteDataActionIntent = 'delete-data'
 
 export async function action({ request }: ActionFunctionArgs) {
 	const sessionData = await requireAuthedSession(request)
@@ -94,20 +83,7 @@ export async function action({ request }: ActionFunctionArgs) {
 				formData,
 			})
 		}
-		case signOutOfSessionsActionIntent: {
-			return signOutOfSessionsAction({
-				request,
-				userId: sessionData?.userId,
-				formData,
-			})
-		}
-		case deleteDataActionIntent: {
-			return deleteDataAction({
-				request,
-				userId: sessionData?.userId,
-				formData,
-			})
-		}
+
 		default: {
 			throw new Response(`Invalid intent "${intent}"`, { status: 400 })
 		}
@@ -118,75 +94,76 @@ export default function EditUserProfile() {
 	const data = useLoaderData<typeof loader>()
 
 	return (
-		<div className="flex flex-col gap-12">
-			<div className="flex justify-center">
-				<div className="relative h-52 w-52">
-					<img
-						src={getUserImgSrc(data.user.image?.id)}
-						alt={data.user.username}
-						className="h-full w-full rounded-full object-cover"
-					/>
-					<Button
-						asChild
-						variant="outline"
-						className="absolute -right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full p-0"
-					>
-						<Link
-							preventScrollReset
-							to="photo"
-							title="Change profile photo"
-							aria-label="Change profile photo"
+		<Card>
+			<CardHeader
+				avatar={
+					<Avatar>
+						<UserIcon fontSize="var(--Icon-fontSize)" />
+					</Avatar>
+				}
+				title="Basic details"
+			/>
+			<CardContent>
+				<Stack spacing={3}>
+					<Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+						<Box
+							sx={{
+								border: '1px dashed var(--mui-palette-divider)',
+								borderRadius: '50%',
+								display: 'inline-flex',
+								p: '4px',
+							}}
 						>
-							<Icon name="camera" className="h-4 w-4" />
-						</Link>
-					</Button>
-				</div>
-			</div>
-			<UpdateProfile />
+							<Box sx={{ borderRadius: 'inherit', position: 'relative' }}>
+								<Box
+									sx={{
+										alignItems: 'center',
+										bgcolor: 'rgba(0, 0, 0, 0.5)',
+										borderRadius: 'inherit',
+										bottom: 0,
+										color: 'var(--mui-palette-common-white)',
+										cursor: 'pointer',
+										display: 'flex',
+										justifyContent: 'center',
+										left: 0,
+										opacity: 0,
+										position: 'absolute',
+										right: 0,
+										top: 0,
+										zIndex: 1,
+										'&:hover': { opacity: 1 },
+									}}
+								>
+									<Link
+										preventScrollReset
+										to="photo"
+										title="Change profile photo"
+										aria-label="Change profile photo"
+									>
+										<Stack
+											direction="row"
+											spacing={1}
+											sx={{ alignItems: 'center' }}
+										>
+											<CameraIcon fontSize="var(--icon-fontSize-md)" />
+											<Typography color="inherit" variant="subtitle2">
+												Select
+											</Typography>
+										</Stack>
+									</Link>
+								</Box>
+								<Avatar
+									src={getUserImgSrc(data.user.image?.id)}
+									sx={{ '--Avatar-size': '100px' }}
+								/>
+							</Box>
+						</Box>
+					</Stack>
 
-			<div className="col-span-6 my-6 h-1 border-b-[1.5px] border-foreground" />
-			<div className="col-span-full flex flex-col gap-6">
-				<div>
-					<Link to="change-email">
-						<Icon name="envelope-closed">
-							Change email from {data.user.email}
-						</Icon>
-					</Link>
-				</div>
-				<div>
-					<Link to="two-factor">
-						{data.isTwoFactorEnabled ? (
-							<Icon name="lock-closed">2FA is enabled</Icon>
-						) : (
-							<Icon name="lock-open-1">Enable 2FA</Icon>
-						)}
-					</Link>
-				</div>
-				<div>
-					<Link to={data.hasPassword ? 'password' : 'password/create'}>
-						<Icon name="dots-horizontal">
-							{data.hasPassword ? 'Change Password' : 'Create a Password'}
-						</Icon>
-					</Link>
-				</div>
-				<div>
-					<Link to="connections">
-						<Icon name="link-2">Manage connections</Icon>
-					</Link>
-				</div>
-				<div>
-					<Link
-						reloadDocument
-						download="my-epic-notes-data.json"
-						to="/resources/download-user-data"
-					>
-						<Icon name="download">Download your data</Icon>
-					</Link>
-				</div>
-				<SignOutOfSessions />
-				<DeleteData />
-			</div>
-		</div>
+					<UpdateProfile />
+				</Stack>
+			</CardContent>
+		</Card>
 	)
 }
 
@@ -282,94 +259,5 @@ function UpdateProfile() {
 				</StatusButton>
 			</div>
 		</fetcher.Form>
-	)
-}
-
-async function signOutOfSessionsAction({ request, userId }: ProfileActionArgs) {
-	const authSession = await authSessionStorage.getSession(
-		request.headers.get('cookie'),
-	)
-	const sessionId = authSession.get(sessionKey)
-	invariantResponse(
-		sessionId,
-		'You must be authenticated to sign out of other sessions',
-	)
-	await prisma.session.deleteMany({
-		where: {
-			userId,
-			id: { not: sessionId },
-		},
-	})
-	return json({ status: 'success' } as const)
-}
-
-function SignOutOfSessions() {
-	const data = useLoaderData<typeof loader>()
-	const dc = useDoubleCheck()
-
-	const fetcher = useFetcher<typeof signOutOfSessionsAction>()
-	const otherSessionsCount = data.user._count.sessions - 1
-	return (
-		<div>
-			{otherSessionsCount ? (
-				<fetcher.Form method="POST">
-					<StatusButton
-						{...dc.getButtonProps({
-							type: 'submit',
-							name: 'intent',
-							value: signOutOfSessionsActionIntent,
-						})}
-						variant={dc.doubleCheck ? 'destructive' : 'default'}
-						status={
-							fetcher.state !== 'idle'
-								? 'pending'
-								: fetcher.data?.status ?? 'idle'
-						}
-					>
-						<Icon name="avatar">
-							{dc.doubleCheck
-								? `Are you sure?`
-								: `Sign out of ${otherSessionsCount} other sessions`}
-						</Icon>
-					</StatusButton>
-				</fetcher.Form>
-			) : (
-				<Icon name="avatar">This is your only session</Icon>
-			)}
-		</div>
-	)
-}
-
-async function deleteDataAction({ userId }: ProfileActionArgs) {
-	await prisma.user.delete({ where: { id: userId } })
-	return redirectWithToast('/', {
-		type: 'success',
-		title: 'Data Deleted',
-		description: 'All of your data has been deleted',
-	})
-}
-
-function DeleteData() {
-	const dc = useDoubleCheck()
-
-	const fetcher = useFetcher<typeof deleteDataAction>()
-	return (
-		<div>
-			<fetcher.Form method="POST">
-				<StatusButton
-					{...dc.getButtonProps({
-						type: 'submit',
-						name: 'intent',
-						value: deleteDataActionIntent,
-					})}
-					variant={dc.doubleCheck ? 'destructive' : 'default'}
-					status={fetcher.state !== 'idle' ? 'pending' : 'idle'}
-				>
-					<Icon name="trash">
-						{dc.doubleCheck ? `Are you sure?` : `Delete all your data`}
-					</Icon>
-				</StatusButton>
-			</fetcher.Form>
-		</div>
 	)
 }
