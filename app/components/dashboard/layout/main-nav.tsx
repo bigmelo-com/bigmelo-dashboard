@@ -4,17 +4,17 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
+// import Tooltip from '@mui/material/Tooltip'
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List'
-import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+// import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import * as React from 'react'
 
 import { getUserImgSrc } from '#app/utils/misc.js'
 import { useUser } from '#app/utils/user.js'
 import { MobileNav } from './mobile-nav'
-import { SearchDialog } from './search-dialog'
+// import { SearchDialog } from './search-dialog'
 import { UserPopover } from './user-popover'
-import { useDialog } from '@/hooks/use-dialog'
+// import { useDialog } from '@/hooks/use-dialog'
 import { usePopover } from '@/hooks/use-popover'
 import { type NavItemConfig } from '@/types/nav'
 
@@ -64,7 +64,7 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 						>
 							<ListIcon />
 						</IconButton>
-						<SearchButton />
+						{/* <SearchButton /> */}
 					</Stack>
 					<Stack
 						direction="row"
@@ -98,23 +98,23 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 	)
 }
 
-function SearchButton(): React.JSX.Element {
-	const dialog = useDialog()
+// function SearchButton(): React.JSX.Element {
+// 	const dialog = useDialog()
 
-	return (
-		<React.Fragment>
-			<Tooltip title="Search">
-				<IconButton
-					onClick={dialog.handleOpen}
-					sx={{ display: { xs: 'none', lg: 'inline-flex' } }}
-				>
-					<MagnifyingGlassIcon />
-				</IconButton>
-			</Tooltip>
-			<SearchDialog onClose={dialog.handleClose} open={dialog.open} />
-		</React.Fragment>
-	)
-}
+// 	return (
+// 		<React.Fragment>
+// 			<Tooltip title="Search">
+// 				<IconButton
+// 					onClick={dialog.handleOpen}
+// 					sx={{ display: { xs: 'none', lg: 'inline-flex' } }}
+// 				>
+// 					<MagnifyingGlassIcon />
+// 				</IconButton>
+// 			</Tooltip>
+// 			<SearchDialog onClose={dialog.handleClose} open={dialog.open} />
+// 		</React.Fragment>
+// 	)
+// }
 
 function UserButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>()

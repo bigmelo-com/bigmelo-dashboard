@@ -78,7 +78,7 @@ export function MobileNav({
 						<Logo color="light" height={32} width={122} />
 					</Box>
 				</div>
-				<WorkspacesSwitch />
+				{/* <WorkspacesSwitch /> */}
 			</Stack>
 			<Box component="nav" sx={{ flex: '1 1 auto', p: 2 }}>
 				{renderNavGroups({ items, onClose, pathname })}
