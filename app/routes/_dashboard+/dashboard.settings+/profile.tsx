@@ -16,7 +16,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const sessionData = await requireAuthedSession(request)
 	const user = await prisma.user.findUnique({
 		where: { id: sessionData?.userId },
-		select: { username: true },
+		select: { email: true },
 	})
 	invariantResponse(user, 'User not found', { status: 404 })
 	return json({})

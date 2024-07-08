@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 				if (!session) {
 					ctx.addIssue({
 						code: z.ZodIssueCode.custom,
-						message: 'Invalid username or password',
+						message: 'Invalid email or password',
 					})
 					return z.NEVER
 				}
@@ -97,12 +97,12 @@ export default function LoginPage() {
 						<Form method="POST" {...getFormProps(form)}>
 							<HoneypotInputs />
 							<Field
-								labelProps={{ children: 'Username' }}
+								labelProps={{ children: 'Email' }}
 								inputProps={{
 									...getInputProps(fields.email, { type: 'text' }),
 									autoFocus: true,
 									className: 'lowercase',
-									autoComplete: 'username',
+									autoComplete: 'email',
 								}}
 								errors={fields.email.errors}
 							/>

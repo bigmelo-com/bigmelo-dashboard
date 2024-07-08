@@ -16,31 +16,29 @@ import { useIsPending } from '#app/utils/misc.tsx'
 import { PasswordAndConfirmPasswordSchema } from '#app/utils/user-validation.ts'
 import { verifySessionStorage } from '#app/utils/verification.server.ts'
 
-export const resetPasswordUsernameSessionKey = 'resetPasswordUsername'
+export const resetPasswordEmailSessionKey = 'resetPasswordEmail'
 
 const ResetPasswordSchema = PasswordAndConfirmPasswordSchema
 
-async function requireResetPasswordUsername(request: Request) {
+async function requireResetPasswordEmail(request: Request) {
 	await requireAnonymous(request)
 	const verifySession = await verifySessionStorage.getSession(
 		request.headers.get('cookie'),
 	)
-	const resetPasswordUsername = verifySession.get(
-		resetPasswordUsernameSessionKey,
-	)
-	if (typeof resetPasswordUsername !== 'string' || !resetPasswordUsername) {
+	const resetPasswordEmail = verifySession.get(resetPasswordEmailSessionKey)
+	if (typeof resetPasswordEmail !== 'string' || !resetPasswordEmail) {
 		throw redirect('/login')
 	}
-	return resetPasswordUsername
+	return resetPasswordEmail
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const resetPasswordUsername = await requireResetPasswordUsername(request)
-	return json({ resetPasswordUsername })
+	const resetPasswordEmail = await requireResetPasswordEmail(request)
+	return json({ resetPasswordEmail: resetPasswordEmail })
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const resetPasswordUsername = await requireResetPasswordUsername(request)
+	const resetPasswordEmail = await requireResetPasswordEmail(request)
 	const formData = await request.formData()
 	const submission = parseWithZod(formData, {
 		schema: ResetPasswordSchema,
@@ -53,7 +51,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 	const { password } = submission.value
 
-	await resetUserPassword({ username: resetPasswordUsername, password })
+	await resetUserPassword({ email: resetPasswordEmail, password })
 	const verifySession = await verifySessionStorage.getSession()
 	return redirect('/login', {
 		headers: {
@@ -86,7 +84,7 @@ export default function ResetPasswordPage() {
 			<div className="text-center">
 				<h1 className="text-h1">Password Reset</h1>
 				<p className="mt-3 text-body-md text-muted-foreground">
-					Hi, {data.resetPasswordUsername}. No worries. It happens all the time.
+					Hi, {data.resetPasswordEmail}. No worries. It happens all the time.
 				</p>
 			</div>
 			<div className="mx-auto mt-16 min-w-full max-w-sm sm:min-w-[368px]">
