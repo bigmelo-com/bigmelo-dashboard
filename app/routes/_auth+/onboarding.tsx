@@ -26,9 +26,9 @@ import { useIsPending } from '#app/utils/misc.tsx'
 import { authSessionStorage } from '#app/utils/session.server.ts'
 import { redirectWithToast } from '#app/utils/toast.server.ts'
 import {
+	EmailSchema,
 	NameSchema,
 	PasswordAndConfirmPasswordSchema,
-	UsernameSchema,
 } from '#app/utils/user-validation.ts'
 import { verifySessionStorage } from '#app/utils/verification.server.ts'
 
@@ -36,7 +36,7 @@ export const onboardingEmailSessionKey = 'onboardingEmail'
 
 const SignupFormSchema = z
 	.object({
-		username: UsernameSchema,
+		email: EmailSchema,
 		name: NameSchema,
 		agreeToTermsOfServiceAndPrivacyPolicy: z.boolean({
 			required_error:
@@ -72,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		schema: intent =>
 			SignupFormSchema.superRefine(async (data, ctx) => {
 				const existingUser = await prisma.user.findUnique({
-					where: { username: data.username },
+					where: { email: data.email },
 					select: { id: true },
 				})
 				if (existingUser) {
@@ -164,13 +164,13 @@ export default function OnboardingRoute() {
 				>
 					<HoneypotInputs />
 					<Field
-						labelProps={{ htmlFor: fields.username.id, children: 'Username' }}
+						labelProps={{ htmlFor: fields.email.id, children: 'Username' }}
 						inputProps={{
-							...getInputProps(fields.username, { type: 'text' }),
-							autoComplete: 'username',
+							...getInputProps(fields.email, { type: 'text' }),
+							autoComplete: 'email',
 							className: 'lowercase',
 						}}
-						errors={fields.username.errors}
+						errors={fields.email.errors}
 					/>
 					<Field
 						labelProps={{ htmlFor: fields.name.id, children: 'Name' }}

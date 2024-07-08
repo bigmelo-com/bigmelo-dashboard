@@ -40,7 +40,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const resetPasswordUsername = await requireResetPasswordUsername(request)
+	const resetPasswordEmail = await requireResetPasswordUsername(request)
 	const formData = await request.formData()
 	const submission = parseWithZod(formData, {
 		schema: ResetPasswordSchema,
@@ -53,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 	const { password } = submission.value
 
-	await resetUserPassword({ username: resetPasswordUsername, password })
+	await resetUserPassword({ email: resetPasswordEmail, password })
 	const verifySession = await verifySessionStorage.getSession()
 	return redirect('/login', {
 		headers: {

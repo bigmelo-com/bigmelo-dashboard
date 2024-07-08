@@ -24,7 +24,7 @@ import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc } from '#app/utils/misc.tsx'
-import { NameSchema, UsernameSchema } from '#app/utils/user-validation.ts'
+import { EmailSchema, NameSchema } from '#app/utils/user-validation.ts'
 
 export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
@@ -32,7 +32,7 @@ export const handle: SEOHandle = {
 
 const ProfileFormSchema = z.object({
 	name: NameSchema.optional(),
-	username: UsernameSchema,
+	email: EmailSchema,
 })
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -42,7 +42,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		select: {
 			id: true,
 			name: true,
-			username: true,
 			email: true,
 			image: {
 				select: { id: true },
@@ -170,9 +169,9 @@ export default function EditUserProfile() {
 async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 	const submission = await parseWithZod(formData, {
 		async: true,
-		schema: ProfileFormSchema.superRefine(async ({ username }, ctx) => {
+		schema: ProfileFormSchema.superRefine(async ({ email }, ctx) => {
 			const existingUsername = await prisma.user.findUnique({
-				where: { username },
+				where: { email },
 				select: { id: true },
 			})
 			if (existingUsername && existingUsername.id !== userId) {
@@ -194,11 +193,11 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 	const data = submission.value
 
 	await prisma.user.update({
-		select: { username: true },
+		select: { email: true },
 		where: { id: userId },
 		data: {
 			name: data.name,
-			username: data.username,
+			email: data.email,
 		},
 	})
 
@@ -220,7 +219,7 @@ function UpdateProfile() {
 			return parseWithZod(formData, { schema: ProfileFormSchema })
 		},
 		defaultValue: {
-			username: data.user.username,
+			email: data.user.email,
 			name: data.user.name,
 		},
 	})
@@ -231,11 +230,11 @@ function UpdateProfile() {
 				<Field
 					className="col-span-3"
 					labelProps={{
-						htmlFor: fields.username.id,
+						htmlFor: fields.email.id,
 						children: 'Username',
 					}}
-					inputProps={getInputProps(fields.username, { type: 'text' })}
-					errors={fields.username.errors}
+					inputProps={getInputProps(fields.email, { type: 'text' })}
+					errors={fields.email.errors}
 				/>
 				<Field
 					className="col-span-3"

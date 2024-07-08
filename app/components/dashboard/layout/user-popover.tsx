@@ -38,7 +38,7 @@ export function UserPopover({
 			<Box sx={{ p: 2 }}>
 				<Typography>{user?.name}</Typography>
 				<Typography color="text.secondary" variant="body2">
-					{user?.username}
+					{user?.email}
 				</Typography>
 			</Box>
 			<Divider />

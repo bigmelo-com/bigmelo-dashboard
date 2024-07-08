@@ -90,15 +90,15 @@ export async function login({
 }
 
 export async function resetUserPassword({
-	username,
+	email,
 	password,
 }: {
-	username: User['username']
+	email: User['email']
 	password: string
 }) {
 	const hashedPassword = await getPasswordHash(password)
 	return prisma.user.update({
-		where: { username },
+		where: { email },
 		data: {
 			password: {
 				update: {
@@ -111,12 +111,11 @@ export async function resetUserPassword({
 
 export async function signup({
 	email,
-	username,
 	password,
 	name,
 }: {
 	email: User['email']
-	username: User['username']
+
 	name: User['name']
 	password: string
 }) {
@@ -128,7 +127,6 @@ export async function signup({
 			user: {
 				create: {
 					email: email.toLowerCase(),
-					username: username.toLowerCase(),
 					name,
 					roles: { connect: { name: 'user' } },
 					password: {
@@ -138,7 +136,7 @@ export async function signup({
 					},
 				},
 			},
-			accessToken: await bcrypt.hash(username, 10), // TODO use a real token
+			accessToken: await bcrypt.hash(email, 10), // TODO use a real token
 		},
 		select: { id: true, expirationDate: true },
 	})
@@ -215,7 +213,6 @@ export async function verifyUserPassword(
 		user = await prisma.user.create({
 			data: {
 				email: where.email,
-				username: where.email,
 				password: {
 					create: {
 						hash: password,

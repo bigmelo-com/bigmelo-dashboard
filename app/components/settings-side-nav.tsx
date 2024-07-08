@@ -81,7 +81,7 @@ export function SettingsSideNav(): React.JSX.Element {
 					<div>
 						<Typography variant="subtitle1">{user.name}</Typography>
 						<Typography color="text.secondary" variant="caption">
-							{user.username}
+							{user.email}
 						</Typography>
 					</div>
 				</Stack>

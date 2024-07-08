@@ -12,8 +12,8 @@ export async function handleVerification({ submission }: VerifyFunctionArgs) {
 	)
 	const target = submission.value.target
 	const user = await prisma.user.findFirst({
-		where: { OR: [{ email: target }, { username: target }] },
-		select: { email: true, username: true },
+		where: { email: target },
+		select: { email: true },
 	})
 	// we don't want to say the user is not found if the email is not found
 	// because that would allow an attacker to check if an email is registered
@@ -25,7 +25,7 @@ export async function handleVerification({ submission }: VerifyFunctionArgs) {
 	}
 
 	const verifySession = await verifySessionStorage.getSession()
-	verifySession.set(resetPasswordUsernameSessionKey, user.username)
+	verifySession.set(resetPasswordUsernameSessionKey, user.email)
 	return redirect('/reset-password', {
 		headers: {
 			'set-cookie': await verifySessionStorage.commitSession(verifySession),

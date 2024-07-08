@@ -13,7 +13,6 @@ function extractUrl(text: string) {
 
 const test = base.extend<{
 	getOnboardingData(): {
-		username: string
 		name: string
 		email: string
 		password: string
@@ -28,7 +27,7 @@ const test = base.extend<{
 			}
 			return onboardingData
 		})
-		await prisma.user.deleteMany({ where: { username: userData.username } })
+		await prisma.user.deleteMany({ where: { email: userData.email } })
 	},
 })
 
@@ -75,8 +74,8 @@ test('onboarding with link', async ({ page, getOnboardingData }) => {
 
 	await expect(page).toHaveURL(`/onboarding`)
 	await page
-		.getByRole('textbox', { name: /^username/i })
-		.fill(onboardingData.username)
+		.getByRole('textbox', { name: /^email/i })
+		.fill(onboardingData.email)
 
 	await page.getByRole('textbox', { name: /^name/i }).fill(onboardingData.name)
 
@@ -95,7 +94,7 @@ test('onboarding with link', async ({ page, getOnboardingData }) => {
 	await page.getByRole('link', { name: onboardingData.name }).click()
 	await page.getByRole('menuitem', { name: /profile/i }).click()
 
-	await expect(page).toHaveURL(`/users/${onboardingData.username}`)
+	await expect(page).toHaveURL(`/users/${onboardingData.email}`)
 
 	await page.getByRole('link', { name: onboardingData.name }).click()
 	await page.getByRole('menuitem', { name: /logout/i }).click()
@@ -136,7 +135,7 @@ test('login as existing user', async ({ page, insertNewUser }) => {
 	const user = await insertNewUser({ password })
 	invariant(user.name, 'User name not found')
 	await page.goto('/login')
-	await page.getByRole('textbox', { name: /username/i }).fill(user.username)
+	await page.getByRole('textbox', { name: /email/i }).fill(user.email)
 	await page.getByLabel(/^password$/i).fill(password)
 	await page.getByRole('button', { name: /log in/i }).click()
 	await expect(page).toHaveURL(`/`)
@@ -156,7 +155,7 @@ test('reset password with a link', async ({ page, insertNewUser }) => {
 	await expect(
 		page.getByRole('heading', { name: /forgot password/i }),
 	).toBeVisible()
-	await page.getByRole('textbox', { name: /username/i }).fill(user.username)
+	await page.getByRole('textbox', { name: /email/i }).fill(user.email)
 	await page.getByRole('button', { name: /recover password/i }).click()
 	await expect(
 		page.getByRole('button', { name: /recover password/i, disabled: true }),
@@ -190,11 +189,11 @@ test('reset password with a link', async ({ page, insertNewUser }) => {
 	).toBeVisible()
 
 	await expect(page).toHaveURL('/login')
-	await page.getByRole('textbox', { name: /username/i }).fill(user.username)
+	await page.getByRole('textbox', { name: /email/i }).fill(user.email)
 	await page.getByLabel(/^password$/i).fill(originalPassword)
 	await page.getByRole('button', { name: /log in/i }).click()
 
-	await expect(page.getByText(/invalid username or password/i)).toBeVisible()
+	await expect(page.getByText(/invalid email or password/i)).toBeVisible()
 
 	await page.getByLabel(/^password$/i).fill(newPassword)
 	await page.getByRole('button', { name: /log in/i }).click()
@@ -214,7 +213,7 @@ test('reset password with a short code', async ({ page, insertNewUser }) => {
 	await expect(
 		page.getByRole('heading', { name: /forgot password/i }),
 	).toBeVisible()
-	await page.getByRole('textbox', { name: /username/i }).fill(user.username)
+	await page.getByRole('textbox', { name: /email/i }).fill(user.email)
 	await page.getByRole('button', { name: /recover password/i }).click()
 	await expect(
 		page.getByRole('button', { name: /recover password/i, disabled: true }),

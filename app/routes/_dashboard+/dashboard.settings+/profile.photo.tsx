@@ -60,7 +60,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		select: {
 			id: true,
 			name: true,
-			username: true,
+			email: true,
 			image: { select: { id: true } },
 		},
 	})
@@ -157,7 +157,7 @@ export default function PhotoRoute() {
 						newImageSrc ?? (data.user ? getUserImgSrc(data.user.image?.id) : '')
 					}
 					className="h-52 w-52 rounded-full object-cover"
-					alt={data.user?.name ?? data.user?.username}
+					alt={data.user?.name ?? data.user?.email ?? 'User photo'}
 				/>
 				<ErrorList errors={fields.photoFile.errors} id={fields.photoFile.id} />
 				<div className="flex gap-4">
