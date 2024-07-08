@@ -31,6 +31,7 @@ import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
 import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
+import { getAuthHeader } from './utils/server/getAuthHeader.ts'
 import { getProfile } from './utils/server/profile.ts'
 import { getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
@@ -90,7 +91,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		desc: 'getUserId in root',
 	})
 
-	const user = await getProfile(sessionData, { timings })
+	if (!sessionData) {
+		// This condition should never happen because getSessionData should redirect to login
+		// if the user is not authenticated.
+		// It's used to avoid a type error.
+		await logout({ request, redirectTo: '/' })
+		return
+	}
+
+	const authHeader = getAuthHeader(sessionData.accessToken)
+
+	const user = await getProfile(
+		{
+			userId: sessionData.userId,
+			authHeader,
+		},
+		{ timings, withRoles: true },
+	)
 
 	if (sessionData?.userId && !user) {
 		console.info('something weird happened')

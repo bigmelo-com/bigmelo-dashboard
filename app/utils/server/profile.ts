@@ -5,16 +5,15 @@ import { isSuccessResponse } from '../isSuccessResponse'
 import { time, type Timings } from '../timing.server'
 import { validate } from '../validate'
 import { verifyZodSchema } from '../verifyZodSchema'
-import { getAuthHeader } from './getAuthHeader'
 
 type SessionData = {
 	userId: string
-	accessToken: string
+	authHeader: { Authorization: string }
 } | null
 
 export async function getProfile(
 	sessionData: SessionData,
-	options?: { timings?: Timings },
+	options?: { timings?: Timings; withRoles?: boolean; withSessions?: boolean },
 ) {
 	return sessionData?.userId
 		? await time(
@@ -23,20 +22,33 @@ export async function getProfile(
 						select: {
 							id: true,
 							image: { select: { id: true } },
-							roles: {
-								select: {
-									name: true,
-									permissions: {
-										select: { entity: true, action: true, access: true },
+							...(options?.withRoles && {
+								roles: {
+									select: {
+										name: true,
+										permissions: {
+											select: { entity: true, action: true, access: true },
+										},
 									},
 								},
-							},
+							}),
+							...(options?.withSessions && {
+								_count: {
+									select: {
+										sessions: {
+											where: {
+												expirationDate: { gt: new Date() },
+											},
+										},
+									},
+								},
+							}),
 						},
 						where: { id: sessionData?.userId },
 					})
 
 					const response = await get('/v1/profile', {
-						headers: getAuthHeader(sessionData?.accessToken),
+						headers: sessionData?.authHeader,
 					})
 
 					validate(
