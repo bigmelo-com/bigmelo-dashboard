@@ -29,10 +29,8 @@ import {
 	useDoubleCheck,
 	useIsPending,
 } from '#app/utils/misc.tsx'
-import { type BreadcrumbHandle } from './profile.tsx'
 
-export const handle: BreadcrumbHandle & SEOHandle = {
-	breadcrumb: <Icon name="avatar">Photo</Icon>,
+export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
 }
 
