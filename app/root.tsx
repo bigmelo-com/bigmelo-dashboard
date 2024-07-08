@@ -25,23 +25,16 @@ import { config } from './config.ts'
 import styles from './styles/global.css?url'
 import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import ClientStyleContext from './styles/theme/ClientStyleContext.tsx'
-import { ProfileResponseSchema } from './types/app/profile.ts'
-import { get } from './utils/api.ts'
 import { getSessionData, logout } from './utils/auth.server.ts'
 import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
-import { prisma } from './utils/db.server.ts'
 import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
-import { isSuccessResponse } from './utils/isSuccessResponse.ts'
 import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
-import { getAuthHeader } from './utils/server/getAuthHeader.ts'
+import { getUserProfile } from './utils/server/userProfile.ts'
 import { getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
-
-import { validate } from './utils/validate.ts'
-import { verifyZodSchema } from './utils/verifyZodSchema.ts'
 
 /* Remove if fonts are not used */
 import '@fontsource/inter/100.css'
@@ -97,44 +90,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		desc: 'getUserId in root',
 	})
 
-	const user = sessionData?.userId
-		? await time(
-				async () => {
-					const remixUser = await prisma.user.findUniqueOrThrow({
-						select: {
-							id: true,
-							image: { select: { id: true } },
-							roles: {
-								select: {
-									name: true,
-									permissions: {
-										select: { entity: true, action: true, access: true },
-									},
-								},
-							},
-						},
-						where: { id: sessionData.userId },
-					})
+	const user = getUserProfile(sessionData, { timings })
 
-					const response = await get('/v1/profile', {
-						headers: getAuthHeader(sessionData.accessToken),
-					})
-
-					validate(
-						isSuccessResponse(response),
-						"We're having trouble logging you in. Please try again.",
-					)
-
-					const { data } = verifyZodSchema(
-						response.data,
-						ProfileResponseSchema,
-						'There was an error logging you in. Please try again.',
-					)
-					return { ...remixUser, ...data }
-				},
-				{ timings, type: 'find user', desc: 'find user in root' },
-			)
-		: null
 	if (sessionData?.userId && !user) {
 		console.info('something weird happened')
 		// something weird happened... The user is authenticated but we can't find
