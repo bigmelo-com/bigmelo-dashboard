@@ -1,5 +1,6 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
+
 import {
 	Avatar,
 	Box,
@@ -21,41 +22,19 @@ import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { ProfileFormSchema } from '#app/types/app/profile.js'
 import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc } from '#app/utils/misc.tsx'
-import { EmailSchema, NameSchema } from '#app/utils/user-validation.ts'
+import { getProfile } from '#app/utils/server/profile.js'
 
 export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
 }
 
-const ProfileFormSchema = z.object({
-	name: NameSchema.optional(),
-	email: EmailSchema,
-})
-
 export async function loader({ request }: LoaderFunctionArgs) {
 	const sessionData = await requireAuthedSession(request)
-	const user = await prisma.user.findUniqueOrThrow({
-		where: { id: sessionData?.userId },
-		select: {
-			id: true,
-			email: true,
-			image: {
-				select: { id: true },
-			},
-			_count: {
-				select: {
-					sessions: {
-						where: {
-							expirationDate: { gt: new Date() },
-						},
-					},
-				},
-			},
-		},
-	})
+	const user = await getProfile(sessionData, { withSessions: true })
 
 	return json({
 		user,
@@ -151,7 +130,7 @@ export default function EditUserProfile() {
 									</Link>
 								</Box>
 								<Avatar
-									src={getUserImgSrc(data.user.image?.id)}
+									src={getUserImgSrc(data.user?.image?.id)}
 									sx={{ '--Avatar-size': '100px' }}
 								/>
 							</Box>
@@ -217,7 +196,10 @@ function UpdateProfile() {
 			return parseWithZod(formData, { schema: ProfileFormSchema })
 		},
 		defaultValue: {
-			email: data.user.email,
+			email: data.user?.email,
+			firstName: data.user?.firstName,
+			lastName: data.user?.lastName,
+			phoneNumber: data.user?.phoneNumber,
 		},
 	})
 
@@ -235,9 +217,24 @@ function UpdateProfile() {
 				/>
 				<Field
 					className="col-span-3"
-					labelProps={{ htmlFor: fields.name.id, children: 'Name' }}
-					inputProps={getInputProps(fields.name, { type: 'text' })}
-					errors={fields.name.errors}
+					labelProps={{
+						htmlFor: fields.phoneNumber.id,
+						children: 'Phone number',
+					}}
+					inputProps={getInputProps(fields.phoneNumber, { type: 'text' })}
+					errors={fields.phoneNumber.errors}
+				/>
+				<Field
+					className="col-span-3"
+					labelProps={{ htmlFor: fields.firstName.id, children: 'First name' }}
+					inputProps={getInputProps(fields.firstName, { type: 'text' })}
+					errors={fields.firstName.errors}
+				/>
+				<Field
+					className="col-span-3"
+					labelProps={{ htmlFor: fields.lastName.id, children: 'Last name' }}
+					inputProps={getInputProps(fields.lastName, { type: 'text' })}
+					errors={fields.lastName.errors}
 				/>
 			</div>
 
