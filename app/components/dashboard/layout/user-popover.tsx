@@ -5,7 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
-import { LockKey as LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey'
+// import { LockKey as LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey'
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import * as React from 'react'
 
@@ -36,7 +36,9 @@ export function UserPopover({
 			transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 		>
 			<Box sx={{ p: 2 }}>
-				<Typography>{user?.name}</Typography>
+				<Typography>
+					{user?.firstName} {user?.lastName}
+				</Typography>
 				<Typography color="text.secondary" variant="body2">
 					{user?.email}
 				</Typography>
