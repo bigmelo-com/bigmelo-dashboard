@@ -170,15 +170,15 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 	const submission = await parseWithZod(formData, {
 		async: true,
 		schema: ProfileFormSchema.superRefine(async ({ email }, ctx) => {
-			const existingUsername = await prisma.user.findUnique({
+			const existingEmail = await prisma.user.findUnique({
 				where: { email },
 				select: { id: true },
 			})
-			if (existingUsername && existingUsername.id !== userId) {
+			if (existingEmail && existingEmail.id !== userId) {
 				ctx.addIssue({
-					path: ['username'],
+					path: ['email'],
 					code: z.ZodIssueCode.custom,
-					message: 'A user already exists with this username',
+					message: 'A user already exists with this email',
 				})
 			}
 		}),
@@ -231,7 +231,7 @@ function UpdateProfile() {
 					className="col-span-3"
 					labelProps={{
 						htmlFor: fields.email.id,
-						children: 'Username',
+						children: 'Email',
 					}}
 					inputProps={getInputProps(fields.email, { type: 'text' })}
 					errors={fields.email.errors}

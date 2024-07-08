@@ -2,7 +2,7 @@ import { invariant } from '@epic-web/invariant'
 import { json, redirect } from '@remix-run/node'
 import { prisma } from '#app/utils/db.server.ts'
 import { verifySessionStorage } from '#app/utils/verification.server.ts'
-import { resetPasswordUsernameSessionKey } from './reset-password.tsx'
+import { resetPasswordEmailSessionKey } from './reset-password.tsx'
 import { type VerifyFunctionArgs } from './verify.server.ts'
 
 export async function handleVerification({ submission }: VerifyFunctionArgs) {
@@ -25,7 +25,7 @@ export async function handleVerification({ submission }: VerifyFunctionArgs) {
 	}
 
 	const verifySession = await verifySessionStorage.getSession()
-	verifySession.set(resetPasswordUsernameSessionKey, user.email)
+	verifySession.set(resetPasswordEmailSessionKey, user.email)
 	return redirect('/reset-password', {
 		headers: {
 			'set-cookie': await verifySessionStorage.commitSession(verifySession),

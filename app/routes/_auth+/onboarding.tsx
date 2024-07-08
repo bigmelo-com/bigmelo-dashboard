@@ -77,9 +77,9 @@ export async function action({ request }: ActionFunctionArgs) {
 				})
 				if (existingUser) {
 					ctx.addIssue({
-						path: ['username'],
+						path: ['email'],
 						code: z.ZodIssueCode.custom,
-						message: 'A user already exists with this username',
+						message: 'A user already exists with this email',
 					})
 					return
 				}
@@ -164,7 +164,7 @@ export default function OnboardingRoute() {
 				>
 					<HoneypotInputs />
 					<Field
-						labelProps={{ htmlFor: fields.email.id, children: 'Username' }}
+						labelProps={{ htmlFor: fields.email.id, children: 'Email' }}
 						inputProps={{
 							...getInputProps(fields.email, { type: 'text' }),
 							autoComplete: 'email',
