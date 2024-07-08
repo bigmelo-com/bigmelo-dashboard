@@ -1,15 +1,13 @@
-import { type Connection, type Password, type User } from '@prisma/client'
+import { type Password, type User } from '@prisma/client'
 import { redirect } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
-import { Authenticator } from 'remix-auth'
 import { safeRedirect } from 'remix-utils/safe-redirect'
 import { type LoginRequest, LoginResponseSchema } from '#app/types/app/login.js'
 import { post } from './api.ts'
-import { connectionSessionStorage, providers } from './connections.server.ts'
+
 import { prisma } from './db.server.ts'
 import { isSuccessResponse } from './isSuccessResponse.ts'
-import { combineHeaders, downloadFile } from './misc.tsx'
-import { type ProviderUser } from './providers/provider.ts'
+import { combineHeaders } from './misc.tsx'
 import { getAuthHeader } from './server/getAuthHeader.ts'
 import { authSessionStorage } from './session.server.ts'
 import { validate } from './validate.ts'
@@ -20,14 +18,6 @@ export const getSessionExpirationDate = () =>
 	new Date(Date.now() + SESSION_EXPIRATION_TIME)
 
 export const sessionKey = 'sessionId'
-
-export const authenticator = new Authenticator<ProviderUser>(
-	connectionSessionStorage,
-)
-
-for (const [providerName, provider] of Object.entries(providers)) {
-	authenticator.use(provider.getAuthStrategy(), providerName)
-}
 
 export async function getSessionData(request: Request) {
 	const authSession = await authSessionStorage.getSession(
@@ -146,44 +136,6 @@ export async function signup({
 							hash: hashedPassword,
 						},
 					},
-				},
-			},
-			accessToken: await bcrypt.hash(username, 10), // TODO use a real token
-		},
-		select: { id: true, expirationDate: true },
-	})
-
-	return session
-}
-
-export async function signupWithConnection({
-	email,
-	username,
-	name,
-	providerId,
-	providerName,
-	imageUrl,
-}: {
-	email: User['email']
-	username: User['username']
-	name: User['name']
-	providerId: Connection['providerId']
-	providerName: Connection['providerName']
-	imageUrl?: string
-}) {
-	const session = await prisma.session.create({
-		data: {
-			expirationDate: getSessionExpirationDate(),
-			user: {
-				create: {
-					email: email.toLowerCase(),
-					username: username.toLowerCase(),
-					name,
-					roles: { connect: { name: 'user' } },
-					connections: { create: { providerId, providerName } },
-					image: imageUrl
-						? { create: await downloadFile(imageUrl) }
-						: undefined,
 				},
 			},
 			accessToken: await bcrypt.hash(username, 10), // TODO use a real token
