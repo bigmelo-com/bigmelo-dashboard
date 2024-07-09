@@ -7,8 +7,17 @@ import {
 	Card,
 	CardContent,
 	CardHeader,
+	FormControl,
+	FormHelperText,
+	InputAdornment,
+	InputLabel,
+	OutlinedInput,
+	Select,
+	Link,
 	Stack,
 	Typography,
+	CardActions,
+	Button,
 } from '@mui/material'
 import { type SEOHandle } from '@nasa-gcn/remix-seo'
 import { Camera as CameraIcon } from '@phosphor-icons/react/dist/ssr/Camera'
@@ -18,7 +27,7 @@ import {
 	type LoaderFunctionArgs,
 	type ActionFunctionArgs,
 } from '@remix-run/node'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
+import { useFetcher, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
@@ -27,6 +36,8 @@ import { requireAuthedSession } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc } from '#app/utils/misc.tsx'
 import { getProfile } from '#app/utils/server/profile.js'
+import { Option } from '@/components/core/option'
+import { RouterLink } from '#app/components/core/link.js'
 
 export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
@@ -111,9 +122,9 @@ export default function EditUserProfile() {
 										'&:hover': { opacity: 1 },
 									}}
 								>
-									<Link
+									<RouterLink
 										preventScrollReset
-										to="photo"
+										href="/dashboard/settings/profile/photo"
 										title="Change profile photo"
 										aria-label="Change profile photo"
 									>
@@ -127,7 +138,7 @@ export default function EditUserProfile() {
 												Select
 											</Typography>
 										</Stack>
-									</Link>
+									</RouterLink>
 								</Box>
 								<Avatar
 									src={getUserImgSrc(data.user?.image?.id)}
@@ -185,25 +196,7 @@ function UpdateProfile() {
 
 	return (
 		<fetcher.Form method="POST" {...getFormProps(form)}>
-			<div className="grid grid-cols-6 gap-x-10">
-				{/* <Field
-					className="col-span-3"
-					labelProps={{
-						htmlFor: fields.email.id,
-						children: 'Email',
-					}}
-					inputProps={getInputProps(fields.email, { type: 'text' })}
-					errors={fields.email.errors}
-				/>
-				<Field
-					className="col-span-3"
-					labelProps={{
-						htmlFor: fields.phoneNumber.id,
-						children: 'Phone number',
-					}}
-					inputProps={getInputProps(fields.phoneNumber, { type: 'text' })}
-					errors={fields.phoneNumber.errors}
-				/> */}
+			{/* <div className="grid grid-cols-6 gap-x-10">
 				<Field
 					className="col-span-3"
 					labelProps={{ htmlFor: fields.firstName.id, children: 'First name' }}
@@ -218,7 +211,7 @@ function UpdateProfile() {
 				/>
 			</div>
 
-			<ErrorList errors={form.errors} id={form.errorId} />
+
 
 			<div className="mt-8 flex justify-center">
 				<StatusButton
@@ -230,7 +223,85 @@ function UpdateProfile() {
 				>
 					Save changes
 				</StatusButton>
-			</div>
+			</div> */}
+			<ErrorList errors={form.errors} id={form.errorId} />
+
+			<Stack spacing={2}>
+				<FormControl>
+					<InputLabel>First name</InputLabel>
+					<OutlinedInput
+						// name="firstName"
+						error={Boolean(fields.firstName.errors)}
+						{...getInputProps(fields.firstName, { type: 'text' })}
+					/>
+				</FormControl>
+				<FormControl>
+					<InputLabel>Last name</InputLabel>
+					<OutlinedInput
+						error={Boolean(fields.lastName.errors)}
+						{...getInputProps(fields.lastName, { type: 'text' })}
+					/>
+				</FormControl>
+				<FormControl disabled>
+					<InputLabel>Email address</InputLabel>
+					<OutlinedInput name="email" type="email" value={data.user?.email} />
+					<FormHelperText>
+						Please{' '}
+						<Link variant="inherit">
+							<RouterLink href="/contact" target="_blank">
+								contact us
+							</RouterLink>
+						</Link>{' '}
+						to change your email
+					</FormHelperText>
+				</FormControl>
+				<Stack direction="row" spacing={2}>
+					<FormControl sx={{ width: '160px' }} disabled>
+						<InputLabel>Dial code</InputLabel>
+						<Select
+							name="countryCode"
+							startAdornment={
+								<InputAdornment position="start">
+									<Box
+										alt="Colombia"
+										component="img"
+										src="/assets/flags/co.svg"
+										sx={{ display: 'block', height: '20px', width: 'auto' }}
+									/>
+								</InputAdornment>
+							}
+							value="+57"
+						>
+							<Option value="+57">Colombia</Option>
+						</Select>
+					</FormControl>
+					<FormControl sx={{ flex: '1 1 auto' }} disabled>
+						<InputLabel>Phone number</InputLabel>
+						<OutlinedInput defaultValue={data.user?.phoneNumber} name="phone" />
+						<FormHelperText>
+							Please{' '}
+							<Link variant="inherit">
+								<RouterLink href="/contact" target="_blank">
+									contact us
+								</RouterLink>
+							</Link>{' '}
+							to change your mobile number
+						</FormHelperText>
+					</FormControl>
+				</Stack>
+			</Stack>
+			<CardActions sx={{ justifyContent: 'flex-end' }}>
+				{/* status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'} */}
+				<Button
+					variant="contained"
+					type="submit"
+					name="intent"
+					value={profileUpdateActionIntent}
+					disabled={fetcher.state !== 'idle'}
+				>
+					Save changes
+				</Button>
+			</CardActions>
 		</fetcher.Form>
 	)
 }
