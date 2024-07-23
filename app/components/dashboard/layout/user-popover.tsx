@@ -5,7 +5,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
-// import { LockKey as LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey'
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import * as React from 'react'
 
