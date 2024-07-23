@@ -27,11 +27,12 @@ import tailwindStyleSheetUrl from './styles/tailwind.css?url'
 import ClientStyleContext from './styles/theme/ClientStyleContext.tsx'
 import { getSessionData, logout } from './utils/auth.server.ts'
 import { ClientHintCheck, getHints } from './utils/client-hints.tsx'
-import { prisma } from './utils/db.server.ts'
 import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
 import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
+import { getAuthHeader } from './utils/server/getAuthHeader.ts'
+import { getProfile } from './utils/server/profile.ts'
 import { getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
@@ -90,31 +91,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		desc: 'getUserId in root',
 	})
 
-	const user = sessionData?.userId
-		? await time(
-				() =>
-					prisma.user.findUniqueOrThrow({
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							image: { select: { id: true } },
-							roles: {
-								select: {
-									name: true,
-									permissions: {
-										select: { entity: true, action: true, access: true },
-									},
-								},
-							},
-						},
-						where: { id: sessionData.userId },
-					}),
-				{ timings, type: 'find user', desc: 'find user in root' },
-			)
-		: null
+	let user
+
+	if (sessionData?.accessToken && sessionData.userId) {
+		const authHeader = getAuthHeader(sessionData.accessToken)
+		user = await getProfile(
+			{
+				userId: sessionData.userId,
+				authHeader,
+			},
+			{ timings, withRoles: true },
+		)
+	}
+
 	if (sessionData?.userId && !user) {
-		console.info('something weird happened')
 		// something weird happened... The user is authenticated but we can't find
 		// them in the database. Maybe they were deleted? Let's log them out.
 		await logout({ request, redirectTo: '/' })

@@ -1,13 +1,23 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
+
 import {
 	Avatar,
 	Box,
 	Card,
 	CardContent,
 	CardHeader,
+	FormControl,
+	FormHelperText,
+	InputAdornment,
+	InputLabel,
+	OutlinedInput,
+	Select,
+	Link,
 	Stack,
 	Typography,
+	CardActions,
+	Button,
 } from '@mui/material'
 import { type SEOHandle } from '@nasa-gcn/remix-seo'
 import { Camera as CameraIcon } from '@phosphor-icons/react/dist/ssr/Camera'
@@ -17,46 +27,22 @@ import {
 	type LoaderFunctionArgs,
 	type ActionFunctionArgs,
 } from '@remix-run/node'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
-import { z } from 'zod'
-import { ErrorList, Field } from '#app/components/forms.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { useFetcher, useLoaderData } from '@remix-run/react'
+import { RouterLink } from '#app/components/core/link.js'
+import { ErrorList } from '#app/components/forms.tsx'
+import { ProfileFormSchema } from '#app/types/app/profile.js'
 import { requireAuthedSession } from '#app/utils/auth.server.ts'
-import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc } from '#app/utils/misc.tsx'
-import { EmailSchema, NameSchema } from '#app/utils/user-validation.ts'
+import { getProfile } from '#app/utils/server/profile.js'
+import { Option } from '@/components/core/option'
 
 export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
 }
 
-const ProfileFormSchema = z.object({
-	name: NameSchema.optional(),
-	email: EmailSchema,
-})
-
 export async function loader({ request }: LoaderFunctionArgs) {
 	const sessionData = await requireAuthedSession(request)
-	const user = await prisma.user.findUniqueOrThrow({
-		where: { id: sessionData?.userId },
-		select: {
-			id: true,
-			name: true,
-			email: true,
-			image: {
-				select: { id: true },
-			},
-			_count: {
-				select: {
-					sessions: {
-						where: {
-							expirationDate: { gt: new Date() },
-						},
-					},
-				},
-			},
-		},
-	})
+	const user = await getProfile(sessionData, { withSessions: true })
 
 	return json({
 		user,
@@ -133,9 +119,9 @@ export default function EditUserProfile() {
 										'&:hover': { opacity: 1 },
 									}}
 								>
-									<Link
+									<RouterLink
 										preventScrollReset
-										to="photo"
+										href="/dashboard/settings/profile/photo"
 										title="Change profile photo"
 										aria-label="Change profile photo"
 									>
@@ -149,10 +135,10 @@ export default function EditUserProfile() {
 												Select
 											</Typography>
 										</Stack>
-									</Link>
+									</RouterLink>
 								</Box>
 								<Avatar
-									src={getUserImgSrc(data.user.image?.id)}
+									src={getUserImgSrc(data.user?.image?.id)}
 									sx={{ '--Avatar-size': '100px' }}
 								/>
 							</Box>
@@ -167,22 +153,10 @@ export default function EditUserProfile() {
 }
 
 async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
-	const submission = await parseWithZod(formData, {
-		async: true,
-		schema: ProfileFormSchema.superRefine(async ({ email }, ctx) => {
-			const existingEmail = await prisma.user.findUnique({
-				where: { email },
-				select: { id: true },
-			})
-			if (existingEmail && existingEmail.id !== userId) {
-				ctx.addIssue({
-					path: ['email'],
-					code: z.ZodIssueCode.custom,
-					message: 'A user already exists with this email',
-				})
-			}
-		}),
+	const submission = parseWithZod(formData, {
+		schema: ProfileFormSchema,
 	})
+
 	if (submission.status !== 'success') {
 		return json(
 			{ result: submission.reply() },
@@ -192,14 +166,7 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 
 	const data = submission.value
 
-	await prisma.user.update({
-		select: { email: true },
-		where: { id: userId },
-		data: {
-			name: data.name,
-			email: data.email,
-		},
-	})
+	console.log('Implement me', data, userId)
 
 	return json({
 		result: submission.reply(),
@@ -219,44 +186,81 @@ function UpdateProfile() {
 			return parseWithZod(formData, { schema: ProfileFormSchema })
 		},
 		defaultValue: {
-			email: data.user.email,
-			name: data.user.name,
+			firstName: data.user?.firstName,
+			lastName: data.user?.lastName,
 		},
 	})
 
 	return (
 		<fetcher.Form method="POST" {...getFormProps(form)}>
-			<div className="grid grid-cols-6 gap-x-10">
-				<Field
-					className="col-span-3"
-					labelProps={{
-						htmlFor: fields.email.id,
-						children: 'Email',
-					}}
-					inputProps={getInputProps(fields.email, { type: 'text' })}
-					errors={fields.email.errors}
-				/>
-				<Field
-					className="col-span-3"
-					labelProps={{ htmlFor: fields.name.id, children: 'Name' }}
-					inputProps={getInputProps(fields.name, { type: 'text' })}
-					errors={fields.name.errors}
-				/>
-			</div>
-
 			<ErrorList errors={form.errors} id={form.errorId} />
 
-			<div className="mt-8 flex justify-center">
-				<StatusButton
+			<Stack spacing={2}>
+				<FormControl disabled>
+					<InputLabel>First name</InputLabel>
+					<OutlinedInput
+						error={Boolean(fields.firstName.errors)}
+						{...getInputProps(fields.firstName, { type: 'text' })}
+					/>
+				</FormControl>
+				<FormControl disabled>
+					<InputLabel>Last name</InputLabel>
+					<OutlinedInput
+						error={Boolean(fields.lastName.errors)}
+						{...getInputProps(fields.lastName, { type: 'text' })}
+					/>
+				</FormControl>
+				<FormControl disabled>
+					<InputLabel>Email address</InputLabel>
+					<OutlinedInput name="email" type="email" value={data.user?.email} />
+				</FormControl>
+				<Stack direction="row" spacing={2}>
+					<FormControl sx={{ width: '160px' }} disabled>
+						<InputLabel>Dial code</InputLabel>
+						<Select
+							name="countryCode"
+							startAdornment={
+								<InputAdornment position="start">
+									<Box
+										alt="Colombia"
+										component="img"
+										src="/assets/flags/co.svg"
+										sx={{ display: 'block', height: '20px', width: 'auto' }}
+									/>
+								</InputAdornment>
+							}
+							value="+57"
+						>
+							<Option value="+57">Colombia</Option>
+						</Select>
+					</FormControl>
+					<FormControl sx={{ flex: '1 1 auto' }} disabled>
+						<InputLabel>Phone number</InputLabel>
+						<OutlinedInput defaultValue={data.user?.phoneNumber} name="phone" />
+					</FormControl>
+				</Stack>
+			</Stack>
+			<CardActions sx={{ justifyContent: 'flex-end' }}>
+				{/* status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'} */}
+				<FormHelperText>
+					Please{' '}
+					<Link variant="inherit">
+						<RouterLink href="/contact" target="_blank">
+							contact us
+						</RouterLink>
+					</Link>{' '}
+					to change your mobile number
+				</FormHelperText>
+				<Button
+					variant="contained"
 					type="submit"
-					size="wide"
 					name="intent"
 					value={profileUpdateActionIntent}
-					status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'}
+					disabled
 				>
 					Save changes
-				</StatusButton>
-			</div>
+				</Button>
+			</CardActions>
 		</fetcher.Form>
 	)
 }

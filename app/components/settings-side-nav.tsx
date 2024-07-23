@@ -79,7 +79,9 @@ export function SettingsSideNav(): React.JSX.Element {
 				<Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
 					<Avatar src={getUserImgSrc(user?.image?.id)} />
 					<div>
-						<Typography variant="subtitle1">{user.name}</Typography>
+						<Typography variant="subtitle1">
+							{user.firstName} {user.lastName}
+						</Typography>
 						<Typography color="text.secondary" variant="caption">
 							{user.email}
 						</Typography>
