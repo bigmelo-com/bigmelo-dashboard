@@ -91,26 +91,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		desc: 'getUserId in root',
 	})
 
-	if (!sessionData) {
-		// This condition should never happen because getSessionData should redirect to login
-		// if the user is not authenticated.
-		// It's used to avoid a type error.
-		await logout({ request, redirectTo: '/' })
-		return
+	let user
+
+	if (sessionData?.accessToken && sessionData.userId) {
+		const authHeader = getAuthHeader(sessionData.accessToken)
+		user = await getProfile(
+			{
+				userId: sessionData.userId,
+				authHeader,
+			},
+			{ timings, withRoles: true },
+		)
 	}
 
-	const authHeader = getAuthHeader(sessionData.accessToken)
-
-	const user = await getProfile(
-		{
-			userId: sessionData.userId,
-			authHeader,
-		},
-		{ timings, withRoles: true },
-	)
-
 	if (sessionData?.userId && !user) {
-		console.info('something weird happened')
 		// something weird happened... The user is authenticated but we can't find
 		// them in the database. Maybe they were deleted? Let's log them out.
 		await logout({ request, redirectTo: '/' })
