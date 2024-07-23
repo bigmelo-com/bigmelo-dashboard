@@ -28,16 +28,13 @@ import {
 	type ActionFunctionArgs,
 } from '@remix-run/node'
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import { z } from 'zod'
-import { ErrorList, Field } from '#app/components/forms.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { RouterLink } from '#app/components/core/link.js'
+import { ErrorList } from '#app/components/forms.tsx'
 import { ProfileFormSchema } from '#app/types/app/profile.js'
 import { requireAuthedSession } from '#app/utils/auth.server.ts'
-import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc } from '#app/utils/misc.tsx'
 import { getProfile } from '#app/utils/server/profile.js'
 import { Option } from '@/components/core/option'
-import { RouterLink } from '#app/components/core/link.js'
 
 export const handle: SEOHandle = {
 	getSitemapEntries: () => null,
@@ -196,46 +193,17 @@ function UpdateProfile() {
 
 	return (
 		<fetcher.Form method="POST" {...getFormProps(form)}>
-			{/* <div className="grid grid-cols-6 gap-x-10">
-				<Field
-					className="col-span-3"
-					labelProps={{ htmlFor: fields.firstName.id, children: 'First name' }}
-					inputProps={getInputProps(fields.firstName, { type: 'text' })}
-					errors={fields.firstName.errors}
-				/>
-				<Field
-					className="col-span-3"
-					labelProps={{ htmlFor: fields.lastName.id, children: 'Last name' }}
-					inputProps={getInputProps(fields.lastName, { type: 'text' })}
-					errors={fields.lastName.errors}
-				/>
-			</div>
-
-
-
-			<div className="mt-8 flex justify-center">
-				<StatusButton
-					type="submit"
-					size="wide"
-					name="intent"
-					value={profileUpdateActionIntent}
-					status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'}
-				>
-					Save changes
-				</StatusButton>
-			</div> */}
 			<ErrorList errors={form.errors} id={form.errorId} />
 
 			<Stack spacing={2}>
-				<FormControl>
+				<FormControl disabled>
 					<InputLabel>First name</InputLabel>
 					<OutlinedInput
-						// name="firstName"
 						error={Boolean(fields.firstName.errors)}
 						{...getInputProps(fields.firstName, { type: 'text' })}
 					/>
 				</FormControl>
-				<FormControl>
+				<FormControl disabled>
 					<InputLabel>Last name</InputLabel>
 					<OutlinedInput
 						error={Boolean(fields.lastName.errors)}
@@ -245,15 +213,6 @@ function UpdateProfile() {
 				<FormControl disabled>
 					<InputLabel>Email address</InputLabel>
 					<OutlinedInput name="email" type="email" value={data.user?.email} />
-					<FormHelperText>
-						Please{' '}
-						<Link variant="inherit">
-							<RouterLink href="/contact" target="_blank">
-								contact us
-							</RouterLink>
-						</Link>{' '}
-						to change your email
-					</FormHelperText>
 				</FormControl>
 				<Stack direction="row" spacing={2}>
 					<FormControl sx={{ width: '160px' }} disabled>
@@ -278,26 +237,26 @@ function UpdateProfile() {
 					<FormControl sx={{ flex: '1 1 auto' }} disabled>
 						<InputLabel>Phone number</InputLabel>
 						<OutlinedInput defaultValue={data.user?.phoneNumber} name="phone" />
-						<FormHelperText>
-							Please{' '}
-							<Link variant="inherit">
-								<RouterLink href="/contact" target="_blank">
-									contact us
-								</RouterLink>
-							</Link>{' '}
-							to change your mobile number
-						</FormHelperText>
 					</FormControl>
 				</Stack>
 			</Stack>
 			<CardActions sx={{ justifyContent: 'flex-end' }}>
 				{/* status={fetcher.state !== 'idle' ? 'pending' : form.status ?? 'idle'} */}
+				<FormHelperText>
+					Please{' '}
+					<Link variant="inherit">
+						<RouterLink href="/contact" target="_blank">
+							contact us
+						</RouterLink>
+					</Link>{' '}
+					to change your mobile number
+				</FormHelperText>
 				<Button
 					variant="contained"
 					type="submit"
 					name="intent"
 					value={profileUpdateActionIntent}
-					disabled={fetcher.state !== 'idle'}
+					disabled
 				>
 					Save changes
 				</Button>
