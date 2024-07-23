@@ -12,8 +12,6 @@ test('Users can update their basic info', async ({ page, login }) => {
 	await page.goto('/settings/profile')
 
 	const newUserData = createUser()
-
-	await page.getByRole('textbox', { name: /^name/i }).fill(newUserData.name)
 	await page.getByRole('textbox', { name: /^email/i }).fill(newUserData.email)
 
 	await page.getByRole('button', { name: /^save/i }).click()

@@ -13,7 +13,6 @@ function extractUrl(text: string) {
 
 const test = base.extend<{
 	getOnboardingData(): {
-		name: string
 		email: string
 		password: string
 	}
@@ -77,8 +76,6 @@ test('onboarding with link', async ({ page, getOnboardingData }) => {
 		.getByRole('textbox', { name: /^email/i })
 		.fill(onboardingData.email)
 
-	await page.getByRole('textbox', { name: /^name/i }).fill(onboardingData.name)
-
 	await page.getByLabel(/^password/i).fill(onboardingData.password)
 
 	await page.getByLabel(/^confirm password/i).fill(onboardingData.password)
@@ -91,12 +88,10 @@ test('onboarding with link', async ({ page, getOnboardingData }) => {
 
 	await expect(page).toHaveURL(`/`)
 
-	await page.getByRole('link', { name: onboardingData.name }).click()
 	await page.getByRole('menuitem', { name: /profile/i }).click()
 
 	await expect(page).toHaveURL(`/users/${onboardingData.email}`)
 
-	await page.getByRole('link', { name: onboardingData.name }).click()
 	await page.getByRole('menuitem', { name: /logout/i }).click()
 	await expect(page).toHaveURL(`/`)
 })
