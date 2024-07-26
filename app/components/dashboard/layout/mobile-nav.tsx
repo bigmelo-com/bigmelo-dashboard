@@ -75,7 +75,7 @@ export function MobileNav({
 						href={paths.home}
 						sx={{ display: 'inline-flex' }}
 					>
-						<Logo color="light" height={32} width={122} />
+						<Logo height={32} width={122} />
 					</Box>
 				</div>
 				{/* <WorkspacesSwitch /> */}

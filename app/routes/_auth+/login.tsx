@@ -2,7 +2,7 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
+
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import {
@@ -24,7 +24,7 @@ import { useIsPending } from '#app/utils/misc.tsx'
 import { handleNewSession } from './login.server.ts'
 import { SplitLayout } from '@/components/auth/split-layout.js'
 import { RouterLink } from '@/components/core/link'
-import { DynamicLogo } from '@/components/core/logo'
+import { Logo } from '@/components/core/logo'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	await requireAnonymous(request)
@@ -97,12 +97,7 @@ export default function LoginPage() {
 						href={paths.home}
 						sx={{ display: 'inline-block', fontSize: 0 }}
 					>
-						<DynamicLogo
-							colorDark="light"
-							colorLight="dark"
-							height={32}
-							width={122}
-						/>
+						<Logo height={32} width={122} />
 					</Box>
 				</div>
 				<Stack spacing={1}>
