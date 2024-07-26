@@ -64,7 +64,7 @@ export function SideNav({
 						href={paths.home}
 						sx={{ display: 'inline-flex' }}
 					>
-						<Logo color={logoColor} height={32} width={122} />
+						<Logo height={32} width={122} />
 					</Box>
 				</div>
 				{/* <WorkspacesSwitch /> */}
