@@ -1,5 +1,10 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import {
 	json,
 	type ActionFunctionArgs,
@@ -11,14 +16,15 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { CheckboxField, ErrorList, Field } from '#app/components/forms.tsx'
-import { Spacer } from '#app/components/spacer.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { paths } from '#app/paths.js'
 import { LoginFormSchema } from '#app/types/app/login.js'
 import { login, requireAnonymous } from '#app/utils/auth.server.ts'
 import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
 import { handleNewSession } from './login.server.ts'
 import { SplitLayout } from '@/components/auth/split-layout.js'
+import { RouterLink } from '@/components/core/link'
+import { DynamicLogo } from '@/components/core/logo'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	await requireAnonymous(request)
@@ -84,95 +90,97 @@ export default function LoginPage() {
 
 	return (
 		<SplitLayout>
-			<div className="flex min-h-full flex-col justify-center pb-32 pt-20">
-				<div className="mx-auto w-full max-w-md">
-					<div className="flex flex-col gap-3 text-center">
-						<h1 className="text-h1">Welcome back!</h1>
-						<p className="text-body-md text-muted-foreground">
-							Please enter your details.
-						</p>
-					</div>
-					<Spacer size="xs" />
-
-					<div>
-						<div className="mx-auto w-full max-w-md px-8">
-							<Form method="POST" {...getFormProps(form)}>
-								<HoneypotInputs />
-								<Field
-									labelProps={{ children: 'Email' }}
-									inputProps={{
-										...getInputProps(fields.email, { type: 'text' }),
-										autoFocus: true,
-										className: 'lowercase',
-										autoComplete: 'email',
-									}}
-									errors={fields.email.errors}
-								/>
-
-								<Field
-									labelProps={{ children: 'Password' }}
-									inputProps={{
-										...getInputProps(fields.password, {
-											type: 'password',
-										}),
-										autoComplete: 'current-password',
-									}}
-									errors={fields.password.errors}
-								/>
-
-								<div className="flex justify-between">
-									<CheckboxField
-										labelProps={{
-											htmlFor: fields.remember.id,
-											children: 'Remember me',
-										}}
-										buttonProps={getInputProps(fields.remember, {
-											type: 'checkbox',
-										})}
-										errors={fields.remember.errors}
-									/>
-									{/* <div>
-									<Link
-										to="/forgot-password"
-										className="text-body-xs font-semibold"
-									>
-										Forgot password?
-									</Link>
-								</div> */}
-								</div>
-
-								<input
-									{...getInputProps(fields.redirectTo, { type: 'hidden' })}
-								/>
-								<ErrorList errors={form.errors} id={form.errorId} />
-
-								<div className="flex items-center justify-between gap-6 pt-3">
-									<StatusButton
-										className="w-full"
-										status={isPending ? 'pending' : form.status ?? 'idle'}
-										type="submit"
-										disabled={isPending}
-									>
-										Log in
-									</StatusButton>
-								</div>
-							</Form>
-							{/* <div className="flex items-center justify-center gap-2 pt-6">
-							<span className="text-muted-foreground">New here?</span>
-							<Link
-								to={
-									redirectTo
-										? `/signup?${encodeURIComponent(redirectTo)}`
-										: '/signup'
-								}
-							>
-								Create an account
-							</Link>
-						</div> */}
-						</div>
-					</div>
+			<Stack spacing={4}>
+				<div>
+					<Box
+						component={RouterLink}
+						href={paths.home}
+						sx={{ display: 'inline-block', fontSize: 0 }}
+					>
+						<DynamicLogo
+							colorDark="light"
+							colorLight="dark"
+							height={32}
+							width={122}
+						/>
+					</Box>
 				</div>
-			</div>
+				<Stack spacing={1}>
+					<Typography variant="h5">Iniciar sesión</Typography>
+					<Typography color="text.secondary" variant="body2">
+						¿Todavía no tienes cuenta?{' '}
+						<Link
+							component={RouterLink}
+							href={
+								redirectTo
+									? `/signup?${encodeURIComponent(redirectTo)}`
+									: '/signup'
+							}
+							variant="subtitle2"
+						>
+							Regístrate
+						</Link>
+					</Typography>
+				</Stack>
+
+				<Stack spacing={2}>
+					<Form method="POST" {...getFormProps(form)}>
+						<Stack spacing={2}>
+							<HoneypotInputs />
+							<Field
+								labelProps={{ children: 'Email' }}
+								inputProps={{
+									...getInputProps(fields.email, { type: 'text' }),
+									autoFocus: true,
+									className: 'lowercase',
+									autoComplete: 'email',
+								}}
+								errors={fields.email.errors}
+							/>
+
+							<Field
+								labelProps={{ children: 'Password' }}
+								inputProps={{
+									...getInputProps(fields.password, {
+										type: 'password',
+									}),
+									autoComplete: 'current-password',
+								}}
+								errors={fields.password.errors}
+							/>
+
+							<CheckboxField
+								labelProps={{
+									htmlFor: fields.remember.id,
+									children: 'Remember me',
+								}}
+								buttonProps={getInputProps(fields.remember, {
+									type: 'checkbox',
+								})}
+								errors={fields.remember.errors}
+							/>
+
+							<input
+								{...getInputProps(fields.redirectTo, { type: 'hidden' })}
+							/>
+							<ErrorList errors={form.errors} id={form.errorId} />
+
+							<Button disabled={isPending} type="submit" variant="contained">
+								Ingresar
+							</Button>
+						</Stack>
+					</Form>
+					{/* <div>
+						<Link
+							component={RouterLink}
+							href="/forgot-password"
+							variant="subtitle2"
+						>
+							Recordar contraseña
+						</Link>
+					</div> */}
+				</Stack>
+			</Stack>
 		</SplitLayout>
 	)
 }
