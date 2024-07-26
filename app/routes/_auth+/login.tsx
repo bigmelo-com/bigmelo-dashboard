@@ -6,7 +6,7 @@ import {
 	type LoaderFunctionArgs,
 	type MetaFunction,
 } from '@remix-run/node'
-import { Form, Link, useActionData, useSearchParams } from '@remix-run/react'
+import { Form, useActionData, useSearchParams } from '@remix-run/react'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
@@ -18,6 +18,7 @@ import { login, requireAnonymous } from '#app/utils/auth.server.ts'
 import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
 import { handleNewSession } from './login.server.ts'
+import { SplitLayout } from '@/components/auth/split-layout.js'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	await requireAnonymous(request)
@@ -82,54 +83,55 @@ export default function LoginPage() {
 	})
 
 	return (
-		<div className="flex min-h-full flex-col justify-center pb-32 pt-20">
-			<div className="mx-auto w-full max-w-md">
-				<div className="flex flex-col gap-3 text-center">
-					<h1 className="text-h1">Welcome back!</h1>
-					<p className="text-body-md text-muted-foreground">
-						Please enter your details.
-					</p>
-				</div>
-				<Spacer size="xs" />
+		<SplitLayout>
+			<div className="flex min-h-full flex-col justify-center pb-32 pt-20">
+				<div className="mx-auto w-full max-w-md">
+					<div className="flex flex-col gap-3 text-center">
+						<h1 className="text-h1">Welcome back!</h1>
+						<p className="text-body-md text-muted-foreground">
+							Please enter your details.
+						</p>
+					</div>
+					<Spacer size="xs" />
 
-				<div>
-					<div className="mx-auto w-full max-w-md px-8">
-						<Form method="POST" {...getFormProps(form)}>
-							<HoneypotInputs />
-							<Field
-								labelProps={{ children: 'Email' }}
-								inputProps={{
-									...getInputProps(fields.email, { type: 'text' }),
-									autoFocus: true,
-									className: 'lowercase',
-									autoComplete: 'email',
-								}}
-								errors={fields.email.errors}
-							/>
-
-							<Field
-								labelProps={{ children: 'Password' }}
-								inputProps={{
-									...getInputProps(fields.password, {
-										type: 'password',
-									}),
-									autoComplete: 'current-password',
-								}}
-								errors={fields.password.errors}
-							/>
-
-							<div className="flex justify-between">
-								<CheckboxField
-									labelProps={{
-										htmlFor: fields.remember.id,
-										children: 'Remember me',
+					<div>
+						<div className="mx-auto w-full max-w-md px-8">
+							<Form method="POST" {...getFormProps(form)}>
+								<HoneypotInputs />
+								<Field
+									labelProps={{ children: 'Email' }}
+									inputProps={{
+										...getInputProps(fields.email, { type: 'text' }),
+										autoFocus: true,
+										className: 'lowercase',
+										autoComplete: 'email',
 									}}
-									buttonProps={getInputProps(fields.remember, {
-										type: 'checkbox',
-									})}
-									errors={fields.remember.errors}
+									errors={fields.email.errors}
 								/>
-								{/* <div>
+
+								<Field
+									labelProps={{ children: 'Password' }}
+									inputProps={{
+										...getInputProps(fields.password, {
+											type: 'password',
+										}),
+										autoComplete: 'current-password',
+									}}
+									errors={fields.password.errors}
+								/>
+
+								<div className="flex justify-between">
+									<CheckboxField
+										labelProps={{
+											htmlFor: fields.remember.id,
+											children: 'Remember me',
+										}}
+										buttonProps={getInputProps(fields.remember, {
+											type: 'checkbox',
+										})}
+										errors={fields.remember.errors}
+									/>
+									{/* <div>
 									<Link
 										to="/forgot-password"
 										className="text-body-xs font-semibold"
@@ -137,25 +139,25 @@ export default function LoginPage() {
 										Forgot password?
 									</Link>
 								</div> */}
-							</div>
+								</div>
 
-							<input
-								{...getInputProps(fields.redirectTo, { type: 'hidden' })}
-							/>
-							<ErrorList errors={form.errors} id={form.errorId} />
+								<input
+									{...getInputProps(fields.redirectTo, { type: 'hidden' })}
+								/>
+								<ErrorList errors={form.errors} id={form.errorId} />
 
-							<div className="flex items-center justify-between gap-6 pt-3">
-								<StatusButton
-									className="w-full"
-									status={isPending ? 'pending' : form.status ?? 'idle'}
-									type="submit"
-									disabled={isPending}
-								>
-									Log in
-								</StatusButton>
-							</div>
-						</Form>
-						{/* <div className="flex items-center justify-center gap-2 pt-6">
+								<div className="flex items-center justify-between gap-6 pt-3">
+									<StatusButton
+										className="w-full"
+										status={isPending ? 'pending' : form.status ?? 'idle'}
+										type="submit"
+										disabled={isPending}
+									>
+										Log in
+									</StatusButton>
+								</div>
+							</Form>
+							{/* <div className="flex items-center justify-center gap-2 pt-6">
 							<span className="text-muted-foreground">New here?</span>
 							<Link
 								to={
@@ -167,10 +169,11 @@ export default function LoginPage() {
 								Create an account
 							</Link>
 						</div> */}
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</SplitLayout>
 	)
 }
 
