@@ -107,7 +107,7 @@ export default function LoginPage() {
 				</div>
 				<Stack spacing={1}>
 					<Typography variant="h5">Iniciar sesión</Typography>
-					<Typography color="text.secondary" variant="body2">
+					{/* <Typography color="text.secondary" variant="body2">
 						¿Todavía no tienes cuenta?{' '}
 						<Link
 							component={RouterLink}
@@ -120,7 +120,7 @@ export default function LoginPage() {
 						>
 							Regístrate
 						</Link>
-					</Typography>
+					</Typography> */}
 				</Stack>
 
 				<Stack spacing={2}>
