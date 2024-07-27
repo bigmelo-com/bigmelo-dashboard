@@ -9,7 +9,7 @@ import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/Car
 import * as React from 'react'
 
 import { icons } from './nav-icons'
-import { WorkspacesSwitch } from './workspaces-switch'
+import { OrganisationsSwitch } from './organisations-switch'
 import { RouterLink } from '@/components/core/link'
 import { Logo } from '@/components/core/logo'
 import { usePathname } from '@/hooks/use-pathname'
@@ -78,7 +78,7 @@ export function MobileNav({
 						<Logo height={32} width={122} />
 					</Box>
 				</div>
-				<WorkspacesSwitch />
+				<OrganisationsSwitch />
 			</Stack>
 			<Box component="nav" sx={{ flex: '1 1 auto', p: 2 }}>
 				{renderNavGroups({ items, onClose, pathname })}

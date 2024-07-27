@@ -15,8 +15,8 @@ import { paths } from '#app/paths.js'
 import { type NavItemConfig } from '#app/types/nav.js'
 import { type Settings, type NavColor } from '#app/types/settings.js'
 import { icons } from './nav-icons'
+import { OrganisationsSwitch } from './organisations-switch'
 import { navColorStyles } from './styles'
-import { WorkspacesSwitch } from './workspaces-switch'
 import { type Organisations } from '@/types/bigmelo/organisations'
 
 export interface SideNavProps {
@@ -62,7 +62,7 @@ export function SideNav({
 						<Logo height={32} width={122} />
 					</Box>
 				</div>
-				<WorkspacesSwitch />
+				<OrganisationsSwitch />
 			</Stack>
 			<Box
 				component="nav"

@@ -10,9 +10,9 @@ import * as React from 'react'
 
 import { usePopover } from '#app/hooks/use-popover.js'
 
-export function WorkspacesSwitch(): React.JSX.Element {
+export function OrganisationsSwitch(): React.JSX.Element {
 	const popover = usePopover<HTMLDivElement>()
-	const workspace = workspaces[0]
+	const workspace = organisations[0]
 
 	return (
 		<React.Fragment>
@@ -43,7 +43,7 @@ export function WorkspacesSwitch(): React.JSX.Element {
 					fontSize="var(--icon-fontSize-sm)"
 				/>
 			</Stack>
-			<WorkspacesPopover
+			<OrganisationsPopover
 				anchorEl={popover.anchorRef.current}
 				onChange={popover.handleClose}
 				onClose={popover.handleClose}
@@ -53,29 +53,29 @@ export function WorkspacesSwitch(): React.JSX.Element {
 	)
 }
 
-const workspaces = [
+const organisations = [
 	{ name: 'Devias', avatar: '/assets/workspace-avatar-1.png' },
 	{ name: 'Carpatin', avatar: '/assets/workspace-avatar-2.png' },
-] satisfies Workspaces[]
+] satisfies Organisations[]
 
-export interface Workspaces {
+export interface Organisations {
 	name: string
 	avatar: string
 }
 
-export interface WorkspacesPopoverProps {
+export interface OrganisationsPopoverProps {
 	anchorEl: null | Element
 	onChange?: (tenant: string) => void
 	onClose?: () => void
 	open?: boolean
 }
 
-function WorkspacesPopover({
+function OrganisationsPopover({
 	anchorEl,
 	onChange,
 	onClose,
 	open = false,
-}: WorkspacesPopoverProps): React.JSX.Element {
+}: OrganisationsPopoverProps): React.JSX.Element {
 	return (
 		<Menu
 			anchorEl={anchorEl}
@@ -85,7 +85,7 @@ function WorkspacesPopover({
 			slotProps={{ paper: { sx: { width: '250px' } } }}
 			transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 		>
-			{workspaces.map(workspace => (
+			{organisations.map(workspace => (
 				<MenuItem
 					key={workspace.name}
 					onClick={() => {
