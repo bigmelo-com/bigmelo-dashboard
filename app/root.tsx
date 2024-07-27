@@ -57,11 +57,18 @@ export const links: LinksFunction = () => {
 		// Preload svg sprite as a resource to avoid render blocking
 		{ rel: 'preload', href: iconsHref, as: 'image' },
 		// Preload CSS as a resource to avoid render blocking
-		{ rel: 'mask-icon', href: '/favicons/mask-icon.svg' },
+		{ rel: 'mask-icon', href: '/favicons/safari-pinned-tab.svg' },
 		{
-			rel: 'alternate icon',
+			rel: 'icon',
 			type: 'image/png',
+			sizes: '32x32',
 			href: '/favicons/favicon-32x32.png',
+		},
+		{
+			rel: 'icon',
+			type: 'image/png',
+			sizes: '16x16',
+			href: '/favicons/favicon-16x16.png',
 		},
 		{ rel: 'apple-touch-icon', href: '/favicons/apple-touch-icon.png' },
 		{
@@ -178,6 +185,10 @@ const Document = withEmotionCache(
 					<Meta />
 					<meta charSet="utf-8" />
 					<meta name="viewport" content="width=device-width,initial-scale=1" />
+					<meta
+						content={config.site.themeColor}
+						name="msapplication-TileColor"
+					/>
 					<meta content={config.site.themeColor} name="theme-color" />
 					{allowIndexing ? null : (
 						<meta name="robots" content="noindex, nofollow" />
