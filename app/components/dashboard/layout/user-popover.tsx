@@ -8,10 +8,11 @@ import Typography from '@mui/material/Typography'
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import * as React from 'react'
 
-import { useOptionalUser } from '#app/utils/user.js'
-import { CustomSignOut } from './custom-sign-out'
-import { RouterLink } from '@/components/core/link'
+import { CustomLogout } from './logout'
+
+import { RouterLink } from '@/components/core/link.js'
 import { paths } from '@/paths'
+import { useOptionalUser } from '@/utils/user.js'
 
 export interface UserPopoverProps {
 	anchorEl: null | Element
@@ -67,7 +68,7 @@ export function UserPopover({
 			</List>
 			<Divider />
 			<Box sx={{ p: 1 }}>
-				<CustomSignOut closePopover={onClose} />
+				<CustomLogout closePopover={onClose} />
 			</Box>
 		</Popover>
 	)
