@@ -17,11 +17,13 @@ import { type Settings, type NavColor } from '#app/types/settings.js'
 import { icons } from './nav-icons'
 import { navColorStyles } from './styles'
 import { WorkspacesSwitch } from './workspaces-switch'
+import { type Organisations } from '@/types/bigmelo/organisations'
 
 export interface SideNavProps {
 	color?: NavColor
 	items?: NavItemConfig[]
 	settings: Settings
+	organisations: Organisations
 }
 
 export function SideNav({

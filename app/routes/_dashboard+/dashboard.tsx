@@ -38,6 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
+	const data = useLoaderData<typeof loader>()
 	return (
 		<Fragment>
 			<GlobalStyles
@@ -63,6 +64,7 @@ export default function Index() {
 			>
 				<SideNav
 					items={layoutConfig.navItems}
+					organisations={data.organisations}
 					settings={{
 						primaryColor: 'neonBlue',
 						direction: 'ltr',
