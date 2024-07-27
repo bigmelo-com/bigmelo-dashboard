@@ -12,17 +12,11 @@ import { Logo } from '#app/components/core/logo.js'
 import { usePathname } from '#app/hooks/use-pathname.js'
 import { isNavItemActive } from '#app/lib/is-nav-item-active.js'
 import { paths } from '#app/paths.js'
-import { type ColorScheme } from '#app/styles/theme/types.js'
 import { type NavItemConfig } from '#app/types/nav.js'
 import { type Settings, type NavColor } from '#app/types/settings.js'
 import { icons } from './nav-icons'
 import { navColorStyles } from './styles'
 import { WorkspacesSwitch } from './workspaces-switch'
-
-const logoColors = {
-	dark: { blend_in: 'light', discrete: 'light', evident: 'light' },
-	light: { blend_in: 'dark', discrete: 'dark', evident: 'light' },
-} as Record<ColorScheme, Record<NavColor, 'dark' | 'light'>>
 
 export interface SideNavProps {
 	color?: NavColor
@@ -38,7 +32,6 @@ export function SideNav({
 	const pathname = usePathname()
 
 	const styles = navColorStyles[settings.colorScheme][color]
-	const logoColor = logoColors[settings.colorScheme][color]
 
 	return (
 		<Box
@@ -67,7 +60,7 @@ export function SideNav({
 						<Logo height={32} width={122} />
 					</Box>
 				</div>
-				{/* <WorkspacesSwitch /> */}
+				<WorkspacesSwitch />
 			</Stack>
 			<Box
 				component="nav"
