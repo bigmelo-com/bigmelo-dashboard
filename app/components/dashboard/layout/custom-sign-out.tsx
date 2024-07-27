@@ -1,24 +1,25 @@
+import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
-import { Form } from '@remix-run/react'
+import { RouterLink } from '#app/components/core/link.js'
 
-type CustomSignOutProps = {
+type CustomLogoutProps = {
 	closePopover?: () => void
 }
 
-export const CustomSignOut = ({ closePopover }: CustomSignOutProps) => {
-	const handleSignOut = () => {
+export const CustomLogout = ({ closePopover }: CustomLogoutProps) => {
+	const handleLogout = () => {
 		closePopover && closePopover()
 	}
 
 	return (
 		<MenuItem
 			component="div"
-			onClick={handleSignOut}
+			onClick={handleLogout}
 			sx={{ justifyContent: 'center' }}
 		>
-			<Form action="/logout" method="POST">
-				<button type="submit">Logout</button>
-			</Form>
+			<Link component={RouterLink} href="/logout" variant="subtitle2">
+				Cerrar Sesión
+			</Link>
 		</MenuItem>
 	)
 }

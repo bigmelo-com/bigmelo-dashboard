@@ -9,7 +9,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import * as React from 'react'
 
 import { useOptionalUser } from '#app/utils/user.js'
-import { CustomSignOut } from './custom-sign-out'
+import { CustomLogout } from './custom-sign-out'
 import { RouterLink } from '@/components/core/link'
 import { paths } from '@/paths'
 
@@ -67,7 +67,7 @@ export function UserPopover({
 			</List>
 			<Divider />
 			<Box sx={{ p: 1 }}>
-				<CustomSignOut closePopover={onClose} />
+				<CustomLogout closePopover={onClose} />
 			</Box>
 		</Popover>
 	)
