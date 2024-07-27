@@ -13,7 +13,7 @@ import { requireAuthedSession } from '#app/utils/auth.server.js'
 import handleLoaderError from '#app/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '#app/utils/verifyZodSchema.js'
 
-export const meta: MetaFunction = () => [{ title: 'Epic Notes' }]
+export const meta: MetaFunction = () => [{ title: 'Bigmelo' }]
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const { authHeader } = await requireAuthedSession(request)
