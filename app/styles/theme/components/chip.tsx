@@ -1,9 +1,9 @@
-import * as React from 'react'
 import { chipClasses } from '@mui/material/Chip'
-import type { Components } from '@mui/material/styles'
+import  { type Components } from '@mui/material/styles'
 import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle'
+import * as React from 'react'
 
-import type { Theme } from '../types'
+import  { type Theme } from '../types'
 
 function getSoftVars(color: string, dark: boolean): Record<string, string> {
 	if (dark) {

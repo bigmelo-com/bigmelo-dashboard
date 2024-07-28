@@ -1,7 +1,7 @@
-import * as React from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Lightbulb as LightbulbIcon } from '@phosphor-icons/react/dist/ssr/Lightbulb'
+import * as React from 'react'
 
 export interface TipProps {
 	message: string

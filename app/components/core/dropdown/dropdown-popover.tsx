@@ -1,7 +1,6 @@
+import { type PaperProps } from '@mui/material/Paper'
+import Popover, { type PopoverOrigin } from '@mui/material/Popover'
 import * as React from 'react'
-import type { PaperProps } from '@mui/material/Paper'
-import type { PopoverOrigin } from '@mui/material/Popover'
-import Popover from '@mui/material/Popover'
 
 import { DropdownContext } from './dropdown-context'
 

@@ -1,5 +1,5 @@
-import * as React from 'react'
 import Chip from '@mui/material/Chip'
+import * as React from 'react'
 
 export interface OptionProps {
 	icon?: React.ReactElement

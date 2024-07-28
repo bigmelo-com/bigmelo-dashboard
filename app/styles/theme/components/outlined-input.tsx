@@ -1,8 +1,8 @@
 import { inputBaseClasses } from '@mui/material/InputBase'
 import { outlinedInputClasses } from '@mui/material/OutlinedInput'
-import type { Components } from '@mui/material/styles'
+import  { type Components } from '@mui/material/styles'
 
-import type { Theme } from '../types'
+import  { type Theme } from '../types'
 
 export const MuiOutlinedInput = {
 	defaultProps: { notched: false },

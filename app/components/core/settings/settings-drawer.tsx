@@ -1,6 +1,5 @@
 'use client'
 
-import * as React from 'react'
 import Badge from '@mui/material/Badge'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -8,14 +7,15 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ArrowCounterClockwise as ArrowCounterClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowCounterClockwise'
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X'
+import * as React from 'react'
 
-import type { Settings } from '@/types/settings'
 
 import { OptionsColorScheme } from './options-color-scheme'
 import { OptionsDirection } from './options-direction'
 import { OptionsLayout } from './options-layout'
 import { OptionsNavColor } from './options-nav-color'
 import { OptionsPrimaryColor } from './options-primary-color'
+import  { type Settings } from '@/types/settings'
 
 export interface SettingsDrawerProps {
 	canReset?: boolean

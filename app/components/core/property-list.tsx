@@ -1,6 +1,6 @@
-import * as React from 'react'
 import Stack from '@mui/material/Stack'
-import type { SxProps } from '@mui/system/styleFunctionSx'
+import  { type SxProps } from '@mui/system/styleFunctionSx'
+import * as React from 'react'
 
 export interface PropertyListProps {
 	children: React.ReactNode

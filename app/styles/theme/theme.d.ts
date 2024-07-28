@@ -1,11 +1,11 @@
-import type {
-	TimelineConnectorClassKey,
-	TimelineConnectorProps,
+import  {
+	type TimelineConnectorClassKey,
+	type TimelineConnectorProps,
 } from '@mui/lab/TimelineConnector'
-import type {
-	ComponentsOverrides,
-	ComponentsProps,
-	ComponentsVariants,
+import  {
+	type ComponentsOverrides,
+	type ComponentsProps,
+	type ComponentsVariants,
 } from '@mui/material/styles'
 
 declare module '@mui/material/styles/components' {

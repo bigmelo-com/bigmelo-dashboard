@@ -1,6 +1,6 @@
-import type { Components } from '@mui/material/styles'
+import  { type Components } from '@mui/material/styles'
 
-import type { Theme } from '../types'
+import  { type Theme } from '../types'
 import { MuiAlert } from './alert'
 import { MuiAvatar } from './avatar'
 import { MuiBackdrop } from './backdrop'

@@ -1,14 +1,14 @@
 'use client'
 
-import * as React from 'react'
 import InputLabel from '@mui/material/InputLabel'
 import Stack from '@mui/material/Stack'
 import { TextAlignLeft as TextAlignLeftIcon } from '@phosphor-icons/react/dist/ssr/TextAlignLeft'
 import { TextAlignRight as TextAlignRightIcon } from '@phosphor-icons/react/dist/ssr/TextAlignRight'
+import * as React from 'react'
 
-import type { Direction } from '@/styles/theme/types'
 
 import { Option } from './option'
+import  { type Direction } from '@/styles/theme/types'
 
 export interface OptionsDirectionProps {
 	onChange?: (value: Direction) => void
