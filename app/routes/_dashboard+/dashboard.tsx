@@ -2,11 +2,11 @@ import { Box, GlobalStyles } from '@mui/material'
 import { type MetaFunction } from '@remix-run/node'
 import { Outlet } from '@remix-run/react'
 import { Fragment } from 'react'
-import { layoutConfig } from '#app/components/dashboard/layout/config.js'
-import { MainNav } from '#app/components/dashboard/layout/main-nav.js'
-import { SideNav } from '#app/components/dashboard/layout/side-nav.js'
-import { EpicProgress } from '#app/components/progress-bar.js'
-import { EpicToaster } from '#app/components/ui/sonner.js'
+import { layoutConfig } from '@/components/dashboard/layout/config.js'
+import { MainNav } from '@/components/dashboard/layout/main-nav.js'
+import { SideNav } from '@/components/dashboard/layout/side-nav.js'
+import { EpicProgress } from '@/components/progress-bar.js'
+import { EpicToaster } from '@/components/ui/sonner.js'
 
 export const meta: MetaFunction = () => [{ title: 'Dashboard' }]
 
