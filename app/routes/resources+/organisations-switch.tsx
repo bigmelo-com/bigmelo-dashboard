@@ -1,17 +1,25 @@
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown'
+import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
+import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { useFetcher } from '@remix-run/react'
-import * as React from 'react'
+import { useEffect } from 'react'
+import {
+	getCurrentOrganisationId,
+	setCurrentOrganisationId,
+} from '#app/utils/organisations.server.js'
 import { usePopover } from '@/hooks/use-popover.js'
 import {
-	Organisation,
+	type Organisation,
 	type Organisations,
 	organisationsApiResponseSchema,
 } from '@/types/bigmelo/organisations.js'
@@ -19,15 +27,6 @@ import { get } from '@/utils/api.js'
 import { requireAuthedSession } from '@/utils/auth.server.js'
 import handleLoaderError from '@/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '@/utils/verifyZodSchema.js'
-import { useEffect } from 'react'
-import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
-import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
-import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
-import Divider from '@mui/material/Divider'
-import {
-	getCurrentOrganisationId,
-	setCurrentOrganisationId,
-} from '#app/utils/organisations.server.js'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const { authHeader } = await requireAuthedSession(request)
@@ -97,10 +96,10 @@ export function OrganisationsSwitch() {
 				action: '/resources/organisations-switch',
 			},
 		)
-	}, [])
+	}, [organisationsFetcher])
 
 	return (
-		<React.Fragment>
+		<>
 			<Stack
 				direction="row"
 				onClick={popover.handleOpen}
@@ -167,7 +166,7 @@ export function OrganisationsSwitch() {
 					currentOrganisationId={currentOrganisationId}
 				/>
 			) : null}
-		</React.Fragment>
+		</>
 	)
 }
 
