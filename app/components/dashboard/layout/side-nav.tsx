@@ -15,15 +15,13 @@ import { paths } from '#app/paths.js'
 import { type NavItemConfig } from '#app/types/nav.js'
 import { type Settings, type NavColor } from '#app/types/settings.js'
 import { icons } from './nav-icons'
-import { OrganisationsSwitch } from './organisations-switch'
 import { navColorStyles } from './styles'
-import { type Organisations } from '@/types/bigmelo/organisations'
+import { OrganisationsSwitch } from '@/routes/resources+/organisations-switch'
 
 export interface SideNavProps {
 	color?: NavColor
 	items?: NavItemConfig[]
 	settings: Settings
-	organisations: Organisations
 }
 
 export function SideNav({

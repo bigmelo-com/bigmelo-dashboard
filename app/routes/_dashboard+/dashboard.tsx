@@ -1,44 +1,16 @@
 import { Box, GlobalStyles } from '@mui/material'
-import { type LoaderFunctionArgs, type MetaFunction } from '@remix-run/node'
-import { json, Outlet, useLoaderData } from '@remix-run/react'
+import { type MetaFunction } from '@remix-run/node'
+import { Outlet } from '@remix-run/react'
 import { Fragment } from 'react'
 import { layoutConfig } from '@/components/dashboard/layout/config.js'
 import { MainNav } from '@/components/dashboard/layout/main-nav.js'
 import { SideNav } from '@/components/dashboard/layout/side-nav.js'
 import { EpicProgress } from '@/components/progress-bar.js'
 import { EpicToaster } from '@/components/ui/sonner.js'
-import { organisationsApiResponseSchema } from '@/types/bigmelo/organisations.js'
-import { get } from '@/utils/api.js'
-import { requireAuthedSession } from '@/utils/auth.server.js'
-import handleLoaderError from '@/utils/server/handleLoaderError.js'
-import { verifyZodSchema } from '@/utils/verifyZodSchema.js'
 
 export const meta: MetaFunction = () => [{ title: 'Dashboard' }]
 
-export async function loader({ request }: LoaderFunctionArgs) {
-	const { authHeader } = await requireAuthedSession(request)
-	try {
-		const organisationsResponse = await get('/v1/organization', {
-			headers: {
-				...authHeader,
-			},
-		})
-
-		const verifiedOrganisations = verifyZodSchema(
-			organisationsResponse.data,
-			organisationsApiResponseSchema,
-		)
-
-		return json({
-			organisations: verifiedOrganisations.data,
-		})
-	} catch (error) {
-		return handleLoaderError(error)
-	}
-}
-
 export default function Index() {
-	const data = useLoaderData<typeof loader>()
 	return (
 		<Fragment>
 			<GlobalStyles
@@ -64,7 +36,6 @@ export default function Index() {
 			>
 				<SideNav
 					items={layoutConfig.navItems}
-					organisations={data.organisations}
 					settings={{
 						primaryColor: 'neonBlue',
 						direction: 'ltr',
