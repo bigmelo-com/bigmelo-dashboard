@@ -11,6 +11,7 @@ import { useFetcher } from '@remix-run/react'
 import * as React from 'react'
 import { usePopover } from '@/hooks/use-popover.js'
 import {
+	Organisation,
 	type Organisations,
 	organisationsApiResponseSchema,
 } from '@/types/bigmelo/organisations.js'
@@ -20,9 +21,17 @@ import handleLoaderError from '@/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '@/utils/verifyZodSchema.js'
 import { useEffect } from 'react'
 import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
+import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
+import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
+import Divider from '@mui/material/Divider'
+import {
+	getCurrentOrganisationId,
+	setCurrentOrganisationId,
+} from '#app/utils/organisations.server.js'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const { authHeader } = await requireAuthedSession(request)
+
 	try {
 		const organisationsResponse = await get('/v1/organization', {
 			headers: {
@@ -35,9 +44,37 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			organisationsApiResponseSchema,
 		)
 
-		return json({
-			organisations: verifiedOrganisations.data,
-		})
+		const currentOrganisationId = getCurrentOrganisationId(request)
+
+		let currentOrganisation = null
+
+		// If the current organisation id is not null, find the organisation in the list
+		if (currentOrganisationId !== null) {
+			currentOrganisation = verifiedOrganisations.data.find(
+				organisation => organisation.id === currentOrganisationId,
+			)
+		}
+
+		// If the current organisation is not found, set it to the first organisation in the list
+		if (!currentOrganisation && verifiedOrganisations.data.length > 0) {
+			currentOrganisation = verifiedOrganisations.data[0]
+		}
+
+		// Update cookie with the current organisation id
+		const responseInit = {
+			headers: {
+				'set-cookie': setCurrentOrganisationId(currentOrganisation?.id),
+			},
+		}
+
+		return json(
+			{
+				organisations: verifiedOrganisations.data,
+				currentOrganisation,
+				currentOrganisationId,
+			},
+			responseInit,
+		)
 	} catch (error) {
 		return handleLoaderError(error)
 	}
@@ -47,6 +84,8 @@ export function OrganisationsSwitch() {
 	const organisationsFetcher = useFetcher<typeof loader>()
 
 	const organisations = organisationsFetcher.data?.organisations ?? []
+	const currentOrganisationId = organisationsFetcher.data?.currentOrganisationId
+	const currentOrganisation = organisationsFetcher.data?.currentOrganisation
 
 	const popover = usePopover<HTMLDivElement>()
 
@@ -75,7 +114,7 @@ export function OrganisationsSwitch() {
 					p: '4px 8px',
 				}}
 			>
-				{organisations.length > 0 ? (
+				{currentOrganisation ? (
 					<>
 						<Avatar variant="rounded">
 							<BuildingOfficeIcon
@@ -94,7 +133,7 @@ export function OrganisationsSwitch() {
 								color="var(--Workspaces-name-color)"
 								variant="subtitle2"
 							>
-								{organisations[0]?.name}
+								{currentOrganisation.name}
 							</Typography>
 						</Box>
 						<CaretUpDownIcon
@@ -104,31 +143,37 @@ export function OrganisationsSwitch() {
 					</>
 				) : (
 					<>
-						<Avatar variant="rounded" />
+						<Avatar variant="rounded">
+							<PlusSquareIcon fontSize="var(--icon-fontSize-lg)" />
+						</Avatar>
 						<Box sx={{ flex: '1 1 auto' }}>
 							<Typography
 								color="var(--Workspaces-title-color)"
 								variant="caption"
 							>
-								No Workspaces
+								Crear organización
 							</Typography>
 						</Box>
 					</>
 				)}
 			</Stack>
-			<OrganisationsPopover
-				anchorEl={popover.anchorRef.current}
-				onChange={popover.handleClose}
-				onClose={popover.handleClose}
-				open={popover.open}
-				organisations={organisations}
-			/>
+			{organisations.length > 0 && currentOrganisationId ? (
+				<OrganisationsPopover
+					anchorEl={popover.anchorRef.current}
+					onChange={popover.handleClose}
+					onClose={popover.handleClose}
+					open={popover.open}
+					organisations={organisations}
+					currentOrganisationId={currentOrganisationId}
+				/>
+			) : null}
 		</React.Fragment>
 	)
 }
 
 export interface OrganisationsPopoverProps {
 	organisations: Organisations
+	currentOrganisationId: Organisation['id']
 	anchorEl: null | Element
 	onChange?: (tenant: string) => void
 	onClose?: () => void
@@ -137,6 +182,7 @@ export interface OrganisationsPopoverProps {
 
 function OrganisationsPopover({
 	organisations,
+	currentOrganisationId,
 	anchorEl,
 	onChange,
 	onClose,
@@ -164,8 +210,18 @@ function OrganisationsPopover({
 						</Avatar>
 					</ListItemAvatar>
 					{organisation.name}
+					{organisation.id === currentOrganisationId && <CheckIcon />}
 				</MenuItem>
 			))}
+			<Divider />
+			<MenuItem
+				onClick={() => {
+					console.log('Create new organisation')
+				}}
+			>
+				<PlusSquareIcon fontSize="var(--icon-fontSize-lg)" />
+				Nueva organización
+			</MenuItem>
 		</Menu>
 	)
 }
