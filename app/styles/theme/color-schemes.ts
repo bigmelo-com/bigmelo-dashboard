@@ -3,6 +3,7 @@ import {
 	type PaletteColorOptions,
 } from '@mui/material/styles'
 
+import { logger } from '#app/lib/default-logger.js'
 import {
 	california,
 	chateauGreen,
@@ -16,7 +17,6 @@ import {
 	tomatoOrange,
 } from './colors'
 import { type ColorScheme, type PrimaryColor } from './types'
-import { logger } from '#app/lib/default-logger.js'
 
 const primarySchemes: Record<
 	PrimaryColor,
