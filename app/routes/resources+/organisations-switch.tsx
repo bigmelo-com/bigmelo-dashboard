@@ -11,8 +11,9 @@ import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/C
 import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
 import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { useFetcher } from '@remix-run/react'
+
 import { useEffect } from 'react'
+import { useFetcher } from '@remix-run/react'
 import {
 	getCurrentOrganisationId,
 	setCurrentOrganisationId,
