@@ -1,14 +1,13 @@
 'use client'
 
-import InputLabel from '@mui/material/InputLabel'
-import Stack from '@mui/material/Stack'
+import { InputLabel, Stack } from '@mui/material'
+
 import { Moon as MoonIcon } from '@phosphor-icons/react/dist/ssr/Moon'
 import { Sun as SunIcon } from '@phosphor-icons/react/dist/ssr/Sun'
 import * as React from 'react'
 
-
 import { Option } from './option'
-import  { type ColorScheme } from '@/styles/theme/types'
+import { type ColorScheme } from '@/styles/theme/types'
 
 export interface OptionsColorSchemeProps {
 	onChange?: (value: ColorScheme) => void
