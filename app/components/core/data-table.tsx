@@ -1,12 +1,14 @@
 'use client'
 
-import Checkbox from '@mui/material/Checkbox'
-import Table, {type  TableProps } from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import * as React from 'react'
+import {
+	Checkbox,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	type TableProps,
+	TableRow,
+} from '@mui/material'
 
 export interface ColumnDef<TRowModel> {
 	align?: 'left' | 'right' | 'center'
