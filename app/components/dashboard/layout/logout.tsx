@@ -1,5 +1,4 @@
-import Link from '@mui/material/Link'
-import MenuItem from '@mui/material/MenuItem'
+import { Link, MenuItem } from '@mui/material'
 import { RouterLink } from '#app/components/core/link.js'
 
 type CustomLogoutProps = {

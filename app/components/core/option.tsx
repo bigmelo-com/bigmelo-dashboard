@@ -1,4 +1,4 @@
-import MenuItem from '@mui/material/MenuItem'
+import { MenuItem } from '@mui/material'
 import * as React from 'react'
 
 export interface OptionProps {
