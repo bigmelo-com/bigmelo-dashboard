@@ -1,7 +1,6 @@
-import { paperClasses } from '@mui/material/Paper'
-import  { type Components } from '@mui/material/styles'
+import { paperClasses, type Components } from '@mui/material'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 export const MuiCard = {
 	styleOverrides: {
