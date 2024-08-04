@@ -1,7 +1,4 @@
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { Box, Chip, Stack, Typography } from '@mui/material'
 import { ArrowSquareOut as ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
 import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight'

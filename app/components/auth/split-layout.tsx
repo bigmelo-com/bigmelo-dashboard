@@ -1,7 +1,4 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import * as React from 'react'
+import { Box, Stack, Typography } from '@mui/material'
 
 export interface SplitLayoutProps {
 	children: React.ReactNode

@@ -1,14 +1,16 @@
-import Badge from '@mui/material/Badge'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import {
+	Badge,
+	Box,
+	CircularProgress,
+	Dialog,
+	DialogContent,
+	Divider,
+	IconButton,
+	InputAdornment,
+	OutlinedInput,
+	Stack,
+	Typography,
+} from '@mui/material'
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X'
 import * as React from 'react'

@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box'
+import { Box } from '@mui/material'
 const HEIGHT = 60
 const WIDTH = 60
 

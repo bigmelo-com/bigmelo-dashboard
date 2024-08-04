@@ -1,14 +1,8 @@
 'use client'
 
-import Box from '@mui/material/Box'
-import InputLabel from '@mui/material/InputLabel'
-import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
+import { Box, InputLabel, Stack, Tooltip, Typography } from '@mui/material'
 import { Info as InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
-import * as React from 'react'
-
-import  { type Layout } from '@/types/settings'
+import { type Layout } from '@/types/settings'
 
 export interface OptionsLayoutProps {
 	onChange?: (value: Layout) => void

@@ -1,13 +1,8 @@
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Drawer from '@mui/material/Drawer'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { Box, Chip, Drawer, Stack, Typography } from '@mui/material'
 import { ArrowSquareOut as ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
 import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight'
-import * as React from 'react'
-
+import { useState } from 'react'
 import { icons } from './nav-icons'
 import { RouterLink } from '@/components/core/link'
 import { Logo } from '@/components/core/logo'
@@ -214,7 +209,7 @@ function NavItem({
 	pathname,
 	title,
 }: NavItemProps): React.JSX.Element {
-	const [open, setOpen] = React.useState<boolean>(forceOpen)
+	const [open, setOpen] = useState<boolean>(forceOpen)
 	const active = isNavItemActive({
 		disabled,
 		external,

@@ -1,10 +1,6 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import {
 	json,
 	type ActionFunctionArgs,
