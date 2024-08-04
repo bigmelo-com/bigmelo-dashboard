@@ -12,7 +12,7 @@ import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
 import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { useFetcher } from '@remix-run/react'
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 import {
 	getCurrentOrganisationId,
 	setCurrentOrganisationId,
@@ -88,15 +88,15 @@ export function OrganisationsSwitch() {
 
 	const popover = usePopover<HTMLDivElement>()
 
-	useEffect(() => {
-		organisationsFetcher.submit(
-			{},
-			{
-				method: 'get',
-				action: '/resources/organisations-switch',
-			},
-		)
-	}, [organisationsFetcher])
+	// useEffect(() => {
+	// 	organisationsFetcher.submit(
+	// 		{},
+	// 		{
+	// 			method: 'get',
+	// 			action: '/resources/organisations-switch',
+	// 		},
+	// 	)
+	// }, [])
 
 	return (
 		<>
