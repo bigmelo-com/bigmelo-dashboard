@@ -1,7 +1,7 @@
-import  { type Components } from '@mui/material/styles'
+import { type Components } from '@mui/material'
 import * as React from 'react'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 function Icon(): React.JSX.Element {
 	return (

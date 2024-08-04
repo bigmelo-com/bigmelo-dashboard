@@ -1,6 +1,6 @@
-import  { type Components } from '@mui/material/styles'
+import { type Components } from '@mui/material'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 export const MuiIconButton = {
 	defaultProps: { color: 'secondary', disableRipple: true },
