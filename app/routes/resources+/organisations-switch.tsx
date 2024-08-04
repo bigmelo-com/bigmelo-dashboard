@@ -1,11 +1,13 @@
-import Avatar from '@mui/material/Avatar'
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import {
+	Avatar,
+	Box,
+	Divider,
+	ListItemAvatar,
+	Menu,
+	MenuItem,
+	Stack,
+	Typography,
+} from '@mui/material'
 import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown'
 import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
