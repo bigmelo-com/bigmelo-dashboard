@@ -1,5 +1,4 @@
-import { backdropClasses } from '@mui/material/Backdrop'
-import { type Components } from '@mui/material'
+import { type Components, backdropClasses } from '@mui/material'
 
 import { type Theme } from '../types'
 

@@ -1,5 +1,4 @@
-import { chipClasses } from '@mui/material/Chip'
-import { type Components } from '@mui/material'
+import { type Components, chipClasses } from '@mui/material'
 import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle'
 import * as React from 'react'
 

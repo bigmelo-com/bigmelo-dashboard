@@ -1,6 +1,6 @@
-import  { type Shadows } from '@mui/material/styles/shadows'
+import { type Shadows } from '@mui/material'
 
-import  { type ColorScheme } from './types'
+import { type ColorScheme } from './types'
 
 export const shadows = {
 	dark: [
