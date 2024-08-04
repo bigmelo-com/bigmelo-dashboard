@@ -14,7 +14,7 @@ import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
 import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { useFetcher } from '@remix-run/react'
-// import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
 	getCurrentOrganisationId,
 	setCurrentOrganisationId,
@@ -88,17 +88,22 @@ export function OrganisationsSwitch() {
 	const currentOrganisationId = organisationsFetcher.data?.currentOrganisationId
 	const currentOrganisation = organisationsFetcher.data?.currentOrganisation
 
+	const [hasInitialFetch, setHasInitialFetch] = useState(false)
+
 	const popover = usePopover<HTMLDivElement>()
 
-	// useEffect(() => {
-	// 	organisationsFetcher.submit(
-	// 		{},
-	// 		{
-	// 			method: 'get',
-	// 			action: '/resources/organisations-switch',
-	// 		},
-	// 	)
-	// }, [])
+	useEffect(() => {
+		if (!hasInitialFetch) {
+			organisationsFetcher.submit(
+				{},
+				{
+					method: 'get',
+					action: '/resources/organisations-switch',
+				},
+			)
+			setHasInitialFetch(true)
+		}
+	}, [hasInitialFetch, organisationsFetcher, setHasInitialFetch])
 
 	return (
 		<>
