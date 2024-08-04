@@ -1,7 +1,7 @@
 import {
 	type ColorSystemOptions,
 	type PaletteColorOptions,
-} from '@mui/material/styles'
+} from '@mui/material'
 
 import { logger } from '#app/lib/default-logger.js'
 import {

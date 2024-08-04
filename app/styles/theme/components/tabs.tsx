@@ -1,8 +1,6 @@
-import  { type Components } from '@mui/material/styles'
-import { tabClasses } from '@mui/material/Tab'
-import { tabsClasses } from '@mui/material/Tabs'
+import { tabClasses, tabsClasses, type Components } from '@mui/material'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 export const MuiTabs = {
 	styleOverrides: {

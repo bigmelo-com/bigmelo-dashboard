@@ -1,12 +1,13 @@
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import List from '@mui/material/List'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import MenuItem from '@mui/material/MenuItem'
-import Popover from '@mui/material/Popover'
-import Typography from '@mui/material/Typography'
+import {
+	Box,
+	Divider,
+	List,
+	ListItemIcon,
+	MenuItem,
+	Popover,
+	Typography,
+} from '@mui/material'
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
-import * as React from 'react'
 
 import { CustomLogout } from './logout'
 

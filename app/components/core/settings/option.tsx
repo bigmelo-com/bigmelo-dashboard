@@ -1,4 +1,4 @@
-import Chip from '@mui/material/Chip'
+import { Chip } from '@mui/material'
 import * as React from 'react'
 
 export interface OptionProps {

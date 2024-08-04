@@ -1,7 +1,6 @@
-import { inputBaseClasses } from '@mui/material/InputBase'
-import  { type Components } from '@mui/material/styles'
+import { type Components, inputBaseClasses } from '@mui/material'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 export const MuiInput = {
 	defaultProps: { disableUnderline: true },

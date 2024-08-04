@@ -1,4 +1,5 @@
-import  { type TypographyOptions } from '@mui/material/styles/createTypography'
+// eslint-disable-next-line no-restricted-imports
+import { type TypographyOptions } from '@mui/material/styles/createTypography'
 
 export const typography = {
 	fontFamily:

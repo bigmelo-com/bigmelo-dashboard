@@ -1,9 +1,9 @@
-import  { type Components } from '@mui/material/styles'
+import { type Components } from '@mui/material'
 import { CaretLeft as CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft'
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight'
 import * as React from 'react'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 function PreviousButtonIcon(): React.JSX.Element {
 	return <CaretLeftIcon fontSize="var(--fontSize-md)" />

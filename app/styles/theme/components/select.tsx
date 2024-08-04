@@ -1,8 +1,8 @@
-import  { type Components } from '@mui/material/styles'
+import { type Components } from '@mui/material'
 import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import * as React from 'react'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 function IconComponent(): React.JSX.Element {
 	return (

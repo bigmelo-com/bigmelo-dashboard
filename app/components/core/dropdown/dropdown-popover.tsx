@@ -1,7 +1,5 @@
-import { type PaperProps } from '@mui/material/Paper'
-import Popover, { type PopoverOrigin } from '@mui/material/Popover'
-import * as React from 'react'
-
+import { type PaperProps, type PopoverOrigin, Popover } from '@mui/material'
+import { useContext } from 'react'
 import { DropdownContext } from './dropdown-context'
 
 export interface DropdownPopoverProps {
@@ -23,7 +21,7 @@ export function DropdownPopover({
 		onPopoverMouseLeave,
 		onPopoverEscapePressed,
 		open,
-	} = React.useContext(DropdownContext)
+	} = useContext(DropdownContext)
 
 	return (
 		<Popover

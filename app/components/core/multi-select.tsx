@@ -1,6 +1,4 @@
-import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
+import { Button, Menu, MenuItem } from '@mui/material'
 import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import * as React from 'react'
 

@@ -1,5 +1,5 @@
-import Stack from '@mui/material/Stack'
-import  { type SxProps } from '@mui/system/styleFunctionSx'
+import { Stack } from '@mui/material'
+import { type SxProps } from '@mui/system/styleFunctionSx'
 import * as React from 'react'
 
 export interface PropertyListProps {

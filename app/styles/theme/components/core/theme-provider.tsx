@@ -1,5 +1,7 @@
-import CssBaseline from '@mui/material/CssBaseline'
-import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
+import {
+	Experimental_CssVarsProvider as CssVarsProvider,
+	CssBaseline,
+} from '@mui/material'
 import * as React from 'react'
 import { config } from '#app/config.js'
 import { createTheme } from '../../create-theme'

@@ -1,14 +1,12 @@
 'use client'
 
-import InputLabel from '@mui/material/InputLabel'
-import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
+import { InputLabel, Stack, Tooltip } from '@mui/material'
+
 import { Info as InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
 import * as React from 'react'
 
-
 import { Option } from './option'
-import  { type NavColor } from '@/types/settings'
+import { type NavColor } from '@/types/settings'
 
 export interface OptionsNavColorProps {
 	onChange?: (value: NavColor) => void

@@ -1,7 +1,6 @@
-import { listItemIconClasses } from '@mui/material/ListItemIcon'
-import  { type Components } from '@mui/material/styles'
+import { listItemIconClasses, type Components } from '@mui/material'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 export const MuiMenuItem = {
 	defaultProps: { disableRipple: true },

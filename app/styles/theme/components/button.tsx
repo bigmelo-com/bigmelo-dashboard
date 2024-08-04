@@ -1,7 +1,6 @@
-import { buttonClasses } from '@mui/material/Button'
-import  { type Components } from '@mui/material/styles'
+import { buttonClasses, type Components } from '@mui/material'
 
-import  { type Theme } from '../types'
+import { type Theme } from '../types'
 
 function getContainedVars(color: string): Record<string, string> {
 	return {

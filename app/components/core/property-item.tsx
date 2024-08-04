@@ -1,6 +1,4 @@
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import * as React from 'react'
+import { Box, Typography } from '@mui/material'
 
 export interface PropertyItemProps {
 	name: string
@@ -35,7 +33,7 @@ export function PropertyItem({
 						{value || 'None'}
 					</Typography>
 				) : (
-					<React.Fragment>{value}</React.Fragment>
+					<>{value}</>
 				)}
 			</div>
 		</Box>

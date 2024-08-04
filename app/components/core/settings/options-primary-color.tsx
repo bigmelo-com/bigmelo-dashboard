@@ -1,13 +1,7 @@
 'use client'
-
-import Box from '@mui/material/Box'
-import InputLabel from '@mui/material/InputLabel'
-import Stack from '@mui/material/Stack'
-import * as React from 'react'
-
-
+import { Box, InputLabel, Stack } from '@mui/material'
 import { Option } from './option'
-import  { type PrimaryColor } from '@/styles/theme/types'
+import { type PrimaryColor } from '@/styles/theme/types'
 
 export interface OptionsPrimaryColorProps {
 	onChange?: (value: PrimaryColor) => void

@@ -1,7 +1,4 @@
-import Avatar from '@mui/material/Avatar'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { Avatar, Box, Stack, Typography } from '@mui/material'
 import { type Icon } from '@phosphor-icons/react/dist/lib/types'
 import { UserCircle as UserCircleIcon } from '@phosphor-icons/react/dist/ssr/UserCircle'
 
