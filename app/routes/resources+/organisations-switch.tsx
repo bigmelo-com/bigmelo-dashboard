@@ -12,7 +12,7 @@ import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown'
 import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { useFetcher } from '@remix-run/react'
+import { useFetcher, useNavigate } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import {
 	getCurrentOrganisationId,
@@ -77,6 +77,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export function OrganisationsSwitch() {
 	const organisationsFetcher = useFetcher<typeof loader>()
+	const navigate = useNavigate()
 
 	const organisations = organisationsFetcher.data?.organisations ?? []
 	const currentOrganisationId = organisationsFetcher.data?.currentOrganisationId
@@ -98,6 +99,11 @@ export function OrganisationsSwitch() {
 			setHasInitialFetch(true)
 		}
 	}, [hasInitialFetch, organisationsFetcher, setHasInitialFetch])
+
+	const handleChangeOrganisation = (id: Organisation['id']) => {
+		navigate(`/dashboard/${id}`)
+		popover.handleClose()
+	}
 
 	return (
 		<>
@@ -160,7 +166,7 @@ export function OrganisationsSwitch() {
 			{organisations.length > 0 && currentOrganisationId ? (
 				<OrganisationsPopover
 					anchorEl={popover.anchorRef.current}
-					onChange={popover.handleClose}
+					onChange={handleChangeOrganisation}
 					onClose={popover.handleClose}
 					open={popover.open}
 					organisations={organisations}
@@ -175,7 +181,7 @@ export interface OrganisationsPopoverProps {
 	organisations: Organisations
 	currentOrganisationId: Organisation['id']
 	anchorEl: null | Element
-	onChange?: (tenant: string) => void
+	onChange?: (organisationId: Organisation['id']) => void
 	onClose?: () => void
 	open?: boolean
 }
@@ -201,7 +207,7 @@ function OrganisationsPopover({
 				<MenuItem
 					key={organisation.id}
 					onClick={() => {
-						onChange?.(organisation.name)
+						onChange?.(organisation.id)
 					}}
 					selected={currentOrganisationId === organisation.id}
 				>
