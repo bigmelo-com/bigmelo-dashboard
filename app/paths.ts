@@ -1,7 +1,9 @@
 export const paths = {
 	home: '/',
+	createOrganisation: '/create-organisation',
 	dashboard: {
 		overview: '/dashboard',
+		organisation: '/dashboard/:organisationId',
 		settings: {
 			profile: '/dashboard/settings/profile',
 		},
