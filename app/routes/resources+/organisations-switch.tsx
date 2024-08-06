@@ -18,6 +18,7 @@ import { type ActionFunctionArgs, json } from '@remix-run/node'
 import { useFetcher, useNavigate } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
+import { paths } from '#app/paths.js'
 import {
 	getCurrentOrganisationId,
 	setCurrentOrganisationId,
@@ -233,6 +234,7 @@ function OrganisationsPopover({
 	onClose,
 	open = false,
 }: OrganisationsPopoverProps): React.JSX.Element {
+	const navigate = useNavigate()
 	return (
 		<Menu
 			anchorEl={anchorEl}
@@ -261,7 +263,7 @@ function OrganisationsPopover({
 			<Divider />
 			<MenuItem
 				onClick={() => {
-					console.log('Create new organisation')
+					navigate(paths.createOrganisation)
 				}}
 			>
 				<PlusSquareIcon fontSize="var(--icon-fontSize-lg)" />
