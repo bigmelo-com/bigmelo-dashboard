@@ -3,6 +3,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import {
 	Avatar,
 	Box,
+	CircularProgress,
 	Divider,
 	ListItemAvatar,
 	Menu,
@@ -31,6 +32,7 @@ import { get } from '@/utils/api.js'
 import { requireAuthedSession } from '@/utils/auth.server.js'
 import handleLoaderError from '@/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '@/utils/verifyZodSchema.js'
+import { margin } from '@mui/system'
 
 const organisationsIdFormSchema = z.object({
 	organisationId: z.number().optional(),
@@ -147,7 +149,25 @@ export function OrganisationsSwitch() {
 					p: '4px 8px',
 				}}
 			>
-				{currentOrganisation ? (
+				{fetcher.state === 'loading' ||
+				fetcher.state === 'submitting' ||
+				!hasInitialFetch ? (
+					<Box
+						sx={{
+							flex: '1 1 auto',
+							height: 40,
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							gap: 1,
+						}}
+					>
+						<CircularProgress size={30} />
+						<Typography color="var(--Workspaces-name-color)" variant="caption">
+							Cargando...
+						</Typography>
+					</Box>
+				) : currentOrganisation ? (
 					<>
 						<Avatar variant="rounded">
 							<BuildingOfficeIcon
@@ -191,20 +211,14 @@ export function OrganisationsSwitch() {
 				)}
 			</Stack>
 			{organisations.length > 0 && currentOrganisationId ? (
-				<fetcher.Form
-					method="POST"
-					// {...getFormProps(form)}
-					action="/resources/organisations-switch"
-				>
-					<OrganisationsPopover
-						anchorEl={popover.anchorRef.current}
-						onChange={handleChangeOrganisation}
-						onClose={popover.handleClose}
-						open={popover.open}
-						organisations={organisations}
-						currentOrganisationId={currentOrganisationId}
-					/>
-				</fetcher.Form>
+				<OrganisationsPopover
+					anchorEl={popover.anchorRef.current}
+					onChange={handleChangeOrganisation}
+					onClose={popover.handleClose}
+					open={popover.open}
+					organisations={organisations}
+					currentOrganisationId={currentOrganisationId}
+				/>
 			) : null}
 		</>
 	)
