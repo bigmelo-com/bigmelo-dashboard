@@ -26,3 +26,22 @@ export const organisationsApiResponseSchema = z.object({
 export type OrganisationsResponse = z.infer<
 	typeof organisationsApiResponseSchema
 >
+
+export const createOrganisationRequestSchema = z.object({
+	userId: z.number(),
+	name: z.string(),
+	description: z.string(),
+})
+
+export type CreateOrganisationRequest = z.infer<
+	typeof createOrganisationRequestSchema
+>
+
+export const createOrganisationResponseSchema = z.object({
+	organisationId: z.number(),
+	message: z.string(),
+})
+
+export type CreateOrganisationResponse = z.infer<
+	typeof createOrganisationResponseSchema
+>
