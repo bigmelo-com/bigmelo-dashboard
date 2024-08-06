@@ -18,14 +18,27 @@ import {
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft'
 import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
 import { type ActionFunctionArgs } from '@remix-run/node'
-import { json, useFetcher } from '@remix-run/react'
+import {
+	Form,
+	json,
+	redirect,
+	useActionData,
+	useFetcher,
+} from '@remix-run/react'
 import { z } from 'zod'
 import { RouterLink } from '#app/components/core/link.js'
 import { paths } from '#app/paths.js'
+import { useIsPending } from '#app/utils/misc.js'
+import { setCurrentOrganisationId } from '#app/utils/organisations.server.js'
 // import { requireAuthedSession } from '#app/utils/auth.server.js'
 
 const CreateOrganisationSchema = z.object({
-	name: z.string(),
+	organisationName: z
+		.string({
+			required_error: 'El nombre de la organización es requerido',
+		})
+		.min(3, 'El nombre de la organización es muy corto')
+		.max(50, 'El nombre de la organización es muy largo'),
 	description: z.string().optional(),
 })
 
@@ -43,30 +56,37 @@ export async function action({ request }: ActionFunctionArgs) {
 		)
 	}
 
-	console.log(submission.value)
+	try {
+		// const response = await fetch('/v1/organization', {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		...authHeader,
+		// 		'Content-Type': 'application/json',
+		// 	},
+		// 	body: JSON.stringify(submission.value),
+		// })
+		// invariantResponse(response.ok, 'Failed to create organisation')
 
-	// try {
-	// 	const response = await fetch('/v1/organization', {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			...authHeader,
-	// 			'Content-Type': 'application/json',
-	// 		},
-	// 		body: JSON.stringify(submission.value),
-	// 	})
-	// 	invariantResponse(response.ok, 'Failed to create organisation')
-	// } catch (error) {
-	// 	return json({ result: { status: 'error', error } }, { status: 500 })
-	// }
+		const responseInit = {
+			headers: {
+				'set-cookie': setCurrentOrganisationId(3),
+			},
+		}
+
+		return redirect('/dashboard/3', responseInit)
+	} catch (error) {
+		return json({ result: submission.reply(), error }, { status: 400 })
+	}
 }
 
 export default function Index() {
-	const createOrganisation = useFetcher<typeof action>()
+	const actionData = useActionData<typeof action>()
+	const isPending = useIsPending()
 
 	const [form, fields] = useForm({
 		id: 'create-organisation-form',
 		constraint: getZodConstraint(CreateOrganisationSchema),
-		lastResult: createOrganisation.data?.result,
+		lastResult: actionData?.result ?? undefined,
 		onValidate({ formData }) {
 			return parseWithZod(formData, { schema: CreateOrganisationSchema })
 		},
@@ -102,13 +122,17 @@ export default function Index() {
 						}
 						title="Nueva organización"
 					/>
-					<createOrganisation.Form method="POST" {...getFormProps(form)}>
+					<Form method="POST" {...getFormProps(form)}>
 						<CardContent>
 							<Stack spacing={3}>
-								<FormControl error={Boolean(fields.name.errors)}>
-									<InputLabel htmlFor={fields.name.name}>Nombre</InputLabel>
+								<FormControl error={Boolean(fields.organisationName?.errors)}>
+									<InputLabel htmlFor={fields.organisationName.name}>
+										Nombre
+									</InputLabel>
 									<OutlinedInput
-										{...getInputProps(fields.name, { type: 'text' })}
+										{...getInputProps(fields.organisationName, {
+											type: 'text',
+										})}
 										required
 									/>
 								</FormControl>
@@ -127,16 +151,13 @@ export default function Index() {
 									variant="contained"
 									type="submit"
 									name="submit"
-									loading={
-										createOrganisation.state === 'loading' ||
-										createOrganisation.state === 'submitting'
-									}
+									loading={isPending}
 								>
 									Crear
 								</LoadingButton>
 							</CardActions>
 						</CardContent>
-					</createOrganisation.Form>
+					</Form>
 				</Card>
 			</Stack>
 		</Container>
