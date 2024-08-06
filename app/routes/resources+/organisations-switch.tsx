@@ -44,8 +44,6 @@ export async function action({ request }: ActionFunctionArgs) {
 		schema: organisationsIdFormSchema,
 	})
 
-	console.log(submission)
-
 	invariantResponse(
 		submission.status === 'success',
 		'Invalid organisationId received',
@@ -124,14 +122,9 @@ export function OrganisationsSwitch() {
 				action: '/resources/organisations-switch',
 			},
 		)
+		navigate(`/dashboard/${id}`)
 		popover.handleClose()
 	}
-
-	useEffect(() => {
-		if (currentOrganisationId) {
-			navigate(`/dashboard/${currentOrganisationId}`)
-		}
-	}, [currentOrganisationId, navigate])
 
 	return (
 		<>
