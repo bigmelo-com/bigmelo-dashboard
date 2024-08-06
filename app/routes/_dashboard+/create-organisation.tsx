@@ -23,9 +23,17 @@ import { Form, json, redirect, useActionData } from '@remix-run/react'
 import { z } from 'zod'
 import { RouterLink } from '#app/components/core/link.js'
 import { paths } from '#app/paths.js'
+import {
+	createOrganisationResponseSchema,
+	type CreateOrganisationRequest,
+} from '#app/types/bigmelo/organisations.js'
+import { post } from '#app/utils/api.js'
+import { requireAuthedSession } from '#app/utils/auth.server.js'
+import { isSuccessResponse } from '#app/utils/isSuccessResponse.js'
 import { useIsPending } from '#app/utils/misc.js'
 import { setCurrentOrganisationId } from '#app/utils/organisations.server.js'
-// import { requireAuthedSession } from '#app/utils/auth.server.js'
+import { validate } from '#app/utils/validate.js'
+import { verifyZodSchema } from '#app/utils/verifyZodSchema.js'
 
 const CreateOrganisationSchema = z.object({
 	organisationName: z
@@ -34,11 +42,14 @@ const CreateOrganisationSchema = z.object({
 		})
 		.min(3, 'El nombre de la organización es muy corto')
 		.max(50, 'El nombre de la organización es muy largo'),
-	description: z.string().optional(),
+	description: z
+		.string({ required_error: 'La descripción es requerida' })
+		.min(3, 'La descripción es muy corta')
+		.max(255, 'La descripción es muy larga'),
 })
 
 export async function action({ request }: ActionFunctionArgs) {
-	// const { authHeader } = await requireAuthedSession(request)
+	const { authHeader } = await requireAuthedSession(request)
 	const formData = await request.formData()
 	const submission = await parseWithZod(formData, {
 		schema: CreateOrganisationSchema,
@@ -52,19 +63,28 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 
 	try {
-		// const response = await fetch('/v1/organization', {
-		// 	method: 'POST',
-		// 	headers: {
-		// 		...authHeader,
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// 	body: JSON.stringify(submission.value),
-		// })
-		// invariantResponse(response.ok, 'Failed to create organisation')
+		const requestBody: CreateOrganisationRequest = {
+			userId: 1,
+			name: submission.value.organisationName,
+			description: submission.value.description,
+		}
+		const response = await post('/v1/organization', requestBody, {
+			headers: {
+				...authHeader,
+			},
+		})
+
+		validate(isSuccessResponse(response), "Couldn't create the organisation")
+
+		const data = verifyZodSchema(
+			response.data,
+			createOrganisationResponseSchema,
+			'There was an error logging you in. Please try again.',
+		)
 
 		const responseInit = {
 			headers: {
-				'set-cookie': setCurrentOrganisationId(3),
+				'set-cookie': setCurrentOrganisationId(data.organisationId),
 			},
 		}
 
@@ -128,20 +148,22 @@ export default function Index() {
 										{...getInputProps(fields.organisationName, {
 											type: 'text',
 										})}
-										required
 									/>
 									<FormHelperText>
 										{fields.organisationName?.errors?.[0]}
 									</FormHelperText>
 								</FormControl>
 
-								<FormControl>
+								<FormControl error={Boolean(fields.description?.errors)}>
 									<InputLabel htmlFor={fields.description.name}>
 										Descripción
 									</InputLabel>
 									<OutlinedInput
 										{...getInputProps(fields.description, { type: 'text' })}
 									/>
+									<FormHelperText>
+										{fields.organisationName?.errors?.[0]}
+									</FormHelperText>
 								</FormControl>
 							</Stack>
 							<CardActions sx={{ justifyContent: 'flex-end' }}>
