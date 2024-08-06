@@ -1,7 +1,17 @@
 import { Box, GlobalStyles } from '@mui/material'
-import { type MetaFunction } from '@remix-run/node'
+import {
+	json,
+	type LoaderFunctionArgs,
+	type MetaFunction,
+} from '@remix-run/node'
 import { Outlet } from '@remix-run/react'
 import { Fragment } from 'react'
+import { organisationsApiResponseSchema } from '#app/types/bigmelo/organisations.js'
+import { get } from '#app/utils/api.js'
+import { requireAuthedSession } from '#app/utils/auth.server.js'
+import { setCurrentOrganisationId } from '#app/utils/organisations.server.js'
+import handleLoaderError from '#app/utils/server/handleLoaderError.js'
+import { verifyZodSchema } from '#app/utils/verifyZodSchema.js'
 import { layoutConfig } from '@/components/dashboard/layout/config.js'
 import { MainNav } from '@/components/dashboard/layout/main-nav.js'
 import { SideNav } from '@/components/dashboard/layout/side-nav.js'
@@ -9,6 +19,43 @@ import { EpicProgress } from '@/components/progress-bar.js'
 import { EpicToaster } from '@/components/ui/sonner.js'
 
 export const meta: MetaFunction = () => [{ title: 'Dashboard' }]
+
+export async function loader({ request }: LoaderFunctionArgs) {
+	const { authHeader } = await requireAuthedSession(request)
+
+	try {
+		const organisationsResponse = await get('/v1/organization', {
+			headers: {
+				...authHeader,
+			},
+		})
+
+		const verifiedOrganisations = verifyZodSchema(
+			organisationsResponse.data,
+			organisationsApiResponseSchema,
+		)
+
+		let responseInit
+		if (verifiedOrganisations.data.length > 0) {
+			responseInit = {
+				headers: {
+					'set-cookie': setCurrentOrganisationId(
+						verifiedOrganisations.data[0]?.id,
+					),
+				},
+			}
+		}
+
+		return json(
+			{
+				currentOrganisationId: verifiedOrganisations.data[0]?.id,
+			},
+			responseInit,
+		)
+	} catch (error) {
+		return handleLoaderError(error)
+	}
+}
 
 export default function Index() {
 	return (
