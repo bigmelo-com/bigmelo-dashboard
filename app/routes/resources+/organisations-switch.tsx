@@ -1,6 +1,9 @@
+import { parseWithZod } from '@conform-to/zod'
+import { invariantResponse } from '@epic-web/invariant'
 import {
 	Avatar,
 	Box,
+	CircularProgress,
 	Divider,
 	ListItemAvatar,
 	Menu,
@@ -10,11 +13,11 @@ import {
 } from '@mui/material'
 import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown'
-import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
 import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
-import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { useFetcher } from '@remix-run/react'
+import { type ActionFunctionArgs, json } from '@remix-run/node'
+import { useFetcher, useNavigate } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
 import {
 	getCurrentOrganisationId,
 	setCurrentOrganisationId,
@@ -30,8 +33,23 @@ import { requireAuthedSession } from '@/utils/auth.server.js'
 import handleLoaderError from '@/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '@/utils/verifyZodSchema.js'
 
-export async function loader({ request }: LoaderFunctionArgs) {
+const organisationsIdFormSchema = z.object({
+	organisationId: z.number().optional(),
+})
+
+export async function action({ request }: ActionFunctionArgs) {
 	const { authHeader } = await requireAuthedSession(request)
+	const formData = await request.formData()
+	const submission = parseWithZod(formData, {
+		schema: organisationsIdFormSchema,
+	})
+
+	console.log(submission)
+
+	invariantResponse(
+		submission.status === 'success',
+		'Invalid organisationId received',
+	)
 
 	try {
 		const organisationsResponse = await get('/v1/organization', {
@@ -45,23 +63,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			organisationsApiResponseSchema,
 		)
 
-		const currentOrganisationId = getCurrentOrganisationId(request)
+		const { organisationId } = submission.value
 
-		let currentOrganisation = null
+		const currentOrganisationId =
+			organisationId ?? getCurrentOrganisationId(request)
 
-		// If the current organisation id is not null, find the organisation in the list
-		if (currentOrganisationId !== null) {
-			currentOrganisation = verifiedOrganisations.data.find(
-				organisation => organisation.id === currentOrganisationId,
-			)
-		}
+		let currentOrganisation = verifiedOrganisations.data.find(
+			organisation => organisation.id === currentOrganisationId,
+		)
 
-		// If the current organisation is not found, set it to the first organisation in the list
-		if (!currentOrganisation && verifiedOrganisations.data.length > 0) {
-			currentOrganisation = verifiedOrganisations.data[0]
-		}
-
-		// Update cookie with the current organisation id
 		const responseInit = {
 			headers: {
 				'set-cookie': setCurrentOrganisationId(currentOrganisation?.id),
@@ -82,11 +92,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export function OrganisationsSwitch() {
-	const organisationsFetcher = useFetcher<typeof loader>()
+	const fetcher = useFetcher<typeof action>()
+	const navigate = useNavigate()
 
-	const organisations = organisationsFetcher.data?.organisations ?? []
-	const currentOrganisationId = organisationsFetcher.data?.currentOrganisationId
-	const currentOrganisation = organisationsFetcher.data?.currentOrganisation
+	const organisations = fetcher.data?.organisations ?? []
+	const currentOrganisationId = fetcher.data?.currentOrganisationId
+	const currentOrganisation = fetcher.data?.currentOrganisation
 
 	const [hasInitialFetch, setHasInitialFetch] = useState(false)
 
@@ -94,16 +105,33 @@ export function OrganisationsSwitch() {
 
 	useEffect(() => {
 		if (!hasInitialFetch) {
-			organisationsFetcher.submit(
+			fetcher.submit(
 				{},
 				{
-					method: 'get',
+					method: 'POST',
 					action: '/resources/organisations-switch',
 				},
 			)
 			setHasInitialFetch(true)
 		}
-	}, [hasInitialFetch, organisationsFetcher, setHasInitialFetch])
+	}, [hasInitialFetch, fetcher, setHasInitialFetch])
+
+	const handleChangeOrganisation = (id: Organisation['id']) => {
+		fetcher.submit(
+			{ organisationId: id },
+			{
+				method: 'POST',
+				action: '/resources/organisations-switch',
+			},
+		)
+		popover.handleClose()
+	}
+
+	useEffect(() => {
+		if (currentOrganisationId) {
+			navigate(`/dashboard/${currentOrganisationId}`)
+		}
+	}, [currentOrganisationId, navigate])
 
 	return (
 		<>
@@ -120,7 +148,25 @@ export function OrganisationsSwitch() {
 					p: '4px 8px',
 				}}
 			>
-				{currentOrganisation ? (
+				{fetcher.state === 'loading' ||
+				fetcher.state === 'submitting' ||
+				!hasInitialFetch ? (
+					<Box
+						sx={{
+							flex: '1 1 auto',
+							height: 40,
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							gap: 1,
+						}}
+					>
+						<CircularProgress size={30} />
+						<Typography color="var(--Workspaces-name-color)" variant="caption">
+							Cargando...
+						</Typography>
+					</Box>
+				) : currentOrganisation ? (
 					<>
 						<Avatar variant="rounded">
 							<BuildingOfficeIcon
@@ -166,7 +212,7 @@ export function OrganisationsSwitch() {
 			{organisations.length > 0 && currentOrganisationId ? (
 				<OrganisationsPopover
 					anchorEl={popover.anchorRef.current}
-					onChange={popover.handleClose}
+					onChange={handleChangeOrganisation}
 					onClose={popover.handleClose}
 					open={popover.open}
 					organisations={organisations}
@@ -181,7 +227,7 @@ export interface OrganisationsPopoverProps {
 	organisations: Organisations
 	currentOrganisationId: Organisation['id']
 	anchorEl: null | Element
-	onChange?: (tenant: string) => void
+	onChange?: (organisationId: Organisation['id']) => void
 	onClose?: () => void
 	open?: boolean
 }
@@ -207,8 +253,9 @@ function OrganisationsPopover({
 				<MenuItem
 					key={organisation.id}
 					onClick={() => {
-						onChange?.(organisation.name)
+						onChange?.(organisation.id)
 					}}
+					selected={currentOrganisationId === organisation.id}
 				>
 					<ListItemAvatar>
 						<Avatar sx={{ '--Avatar-size': '32px' }} variant="rounded">
@@ -216,7 +263,6 @@ function OrganisationsPopover({
 						</Avatar>
 					</ListItemAvatar>
 					{organisation.name}
-					{organisation.id === currentOrganisationId && <CheckIcon />}
 				</MenuItem>
 			))}
 			<Divider />
