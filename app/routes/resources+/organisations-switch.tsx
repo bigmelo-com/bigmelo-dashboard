@@ -10,7 +10,6 @@ import {
 } from '@mui/material'
 import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown'
-import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
 import { PlusSquare as PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { useFetcher } from '@remix-run/react'
@@ -47,14 +46,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 		const currentOrganisationId = getCurrentOrganisationId(request)
 
-		let currentOrganisation = null
-
-		// If the current organisation id is not null, find the organisation in the list
-		if (currentOrganisationId !== null) {
-			currentOrganisation = verifiedOrganisations.data.find(
-				organisation => organisation.id === currentOrganisationId,
-			)
-		}
+		let currentOrganisation = verifiedOrganisations.data.find(
+			organisation => organisation.id === currentOrganisationId,
+		)
 
 		// If the current organisation is not found, set it to the first organisation in the list
 		if (!currentOrganisation && verifiedOrganisations.data.length > 0) {
@@ -209,6 +203,7 @@ function OrganisationsPopover({
 					onClick={() => {
 						onChange?.(organisation.name)
 					}}
+					selected={currentOrganisationId === organisation.id}
 				>
 					<ListItemAvatar>
 						<Avatar sx={{ '--Avatar-size': '32px' }} variant="rounded">
@@ -216,7 +211,6 @@ function OrganisationsPopover({
 						</Avatar>
 					</ListItemAvatar>
 					{organisation.name}
-					{organisation.id === currentOrganisationId && <CheckIcon />}
 				</MenuItem>
 			))}
 			<Divider />
