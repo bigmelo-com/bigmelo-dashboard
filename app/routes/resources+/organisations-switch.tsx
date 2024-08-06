@@ -32,7 +32,6 @@ import { get } from '@/utils/api.js'
 import { requireAuthedSession } from '@/utils/auth.server.js'
 import handleLoaderError from '@/utils/server/handleLoaderError.js'
 import { verifyZodSchema } from '@/utils/verifyZodSchema.js'
-import { margin } from '@mui/system'
 
 const organisationsIdFormSchema = z.object({
 	organisationId: z.number().optional(),
@@ -129,10 +128,10 @@ export function OrganisationsSwitch() {
 	}
 
 	useEffect(() => {
-		if (currentOrganisation) {
-			navigate(`/dashboard/${currentOrganisation.id}`)
+		if (currentOrganisationId) {
+			navigate(`/dashboard/${currentOrganisationId}`)
 		}
-	}, [currentOrganisation])
+	}, [currentOrganisationId, navigate])
 
 	return (
 		<>
