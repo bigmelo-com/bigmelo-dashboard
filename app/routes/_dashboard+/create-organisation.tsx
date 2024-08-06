@@ -9,6 +9,7 @@ import {
 	CardHeader,
 	Container,
 	FormControl,
+	FormHelperText,
 	InputLabel,
 	Link,
 	OutlinedInput,
@@ -18,13 +19,7 @@ import {
 import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft'
 import { BuildingOffice as BuildingOfficeIcon } from '@phosphor-icons/react/dist/ssr/BuildingOffice'
 import { type ActionFunctionArgs } from '@remix-run/node'
-import {
-	Form,
-	json,
-	redirect,
-	useActionData,
-	useFetcher,
-} from '@remix-run/react'
+import { Form, json, redirect, useActionData } from '@remix-run/react'
 import { z } from 'zod'
 import { RouterLink } from '#app/components/core/link.js'
 import { paths } from '#app/paths.js'
@@ -135,6 +130,9 @@ export default function Index() {
 										})}
 										required
 									/>
+									<FormHelperText>
+										{fields.organisationName?.errors?.[0]}
+									</FormHelperText>
 								</FormControl>
 
 								<FormControl>
