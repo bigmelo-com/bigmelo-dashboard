@@ -26,6 +26,7 @@ import { paths } from '#app/paths.js'
 
 const CreateOrganisationSchema = z.object({
 	name: z.string(),
+	description: z.string().optional(),
 })
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -104,15 +105,22 @@ export default function Index() {
 					<createOrganisation.Form method="POST" {...getFormProps(form)}>
 						<CardContent>
 							<Stack spacing={3}>
-								<Stack spacing={3}>
-									<FormControl>
-										<InputLabel>Nombre</InputLabel>
-										<OutlinedInput
-											{...getInputProps(fields.name, { type: 'text' })}
-											error={Boolean(fields.name.errors)}
-										/>
-									</FormControl>
-								</Stack>
+								<FormControl error={Boolean(fields.name.errors)}>
+									<InputLabel htmlFor={fields.name.name}>Nombre</InputLabel>
+									<OutlinedInput
+										{...getInputProps(fields.name, { type: 'text' })}
+										required
+									/>
+								</FormControl>
+
+								<FormControl>
+									<InputLabel htmlFor={fields.description.name}>
+										Descripción
+									</InputLabel>
+									<OutlinedInput
+										{...getInputProps(fields.description, { type: 'text' })}
+									/>
+								</FormControl>
 							</Stack>
 							<CardActions sx={{ justifyContent: 'flex-end' }}>
 								<LoadingButton
