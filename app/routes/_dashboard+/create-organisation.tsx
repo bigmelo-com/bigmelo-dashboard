@@ -64,7 +64,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	try {
 		const requestBody: CreateOrganisationRequest = {
-			userId: 1,
+			userId: 9, // TODO - USE THE REAL USER ID HERE!
 			name: submission.value.organisationName,
 			description: submission.value.description,
 		}
@@ -88,7 +88,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		}
 
-		return redirect('/dashboard/3', responseInit)
+		return redirect(`/dashboard/${data.organisationId}`, responseInit)
 	} catch (error) {
 		return json({ result: submission.reply(), error }, { status: 400 })
 	}
