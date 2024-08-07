@@ -4,8 +4,9 @@ import {
 	type LoaderFunctionArgs,
 	type MetaFunction,
 } from '@remix-run/node'
-import { Outlet } from '@remix-run/react'
+import { Outlet, redirect } from '@remix-run/react'
 import { Fragment } from 'react'
+import { paths } from '#app/paths.js'
 import { organisationsApiResponseSchema } from '#app/types/bigmelo/organisations.js'
 import { get } from '#app/utils/api.js'
 import { requireAuthedSession } from '#app/utils/auth.server.js'
@@ -30,9 +31,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			},
 		})
 
+		if ((organisationsResponse.data as any).data.length === 0) {
+			return redirect(paths.createOrganisation)
+		}
+
 		const verifiedOrganisations = verifyZodSchema(
 			organisationsResponse.data,
 			organisationsApiResponseSchema,
+			'There is not an organisation associated with your account. Please create one.',
 		)
 
 		let responseInit
